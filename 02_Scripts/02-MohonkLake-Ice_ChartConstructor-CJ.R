@@ -1,5 +1,6 @@
 # Loads the tidyverse packages which are being utilized below
 library(tidyverse)
+library(ggplot2)
 
 # Loads the MohonkLake ice data from the CSV file
 # On other operating systems
@@ -28,3 +29,4 @@ MohonkLake_IceData_With_TimeLength <- MohonkLake_IceData_As_DateTimeObjects |>
         ICE_LENGTH2 = ceiling(difftime(ICEOUT_2, ICEIN_2, units = "days")),
         ICE_LENGTH3 = ceiling(difftime(ICEOUT_3, ICEIN_3, units = "days"))
     )
+
