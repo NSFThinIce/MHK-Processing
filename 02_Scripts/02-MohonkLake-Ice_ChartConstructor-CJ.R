@@ -11,7 +11,7 @@ raw_ice_data <- readr::read_csv(file = "./01_Data/IceData/MohonkLake-IceOnIceOff
 # "Length" -> The amount of days the ice was on the lake before it receded
 # round() is used to prevent fractional days from appearing (They occur because of Daylight Savings)
 # "Winter Year" -> The year the winter started
-# "Current Phase" -> The current "Ice phase" (1, 2 or 3) [PROBABLY SHOULD BE RENAMED]
+# "Current Phase" -> The current "Ice phase" (1, 2 or 3) [PROBABLY SHOULD BE RENAMED 6/13/24]
 
 # To do this we must first: Combine all of the data into 2 columns (Ice In & Ice Out)
 # We can use the "c" function which combines its arguments to a vector (array)
@@ -89,7 +89,7 @@ ice_data_completed <- ice_data_sorted |>
 # Now we are complete! Let's view the result...
 View(ice_data_completed)
 
-# Time to graph1!!
+# Time to graph1!! [COMMENTS MISSING 6/13/24]
 the_graph <- ggplot(
   ice_data_completed,
   aes(
@@ -106,6 +106,6 @@ the_graph <- ggplot(
   breaks = seq(1920, 2025, 5)
 )
 
-# Save the graph
+# Saves the graph
 # Because the data is not complete, one label is missing on the x axis
-ggsave("Mohonk Ice Chart.svg", plot = the_graph, width = 12, height = 11, units = "in")
+ggsave("MohonkLake-IceOnIceOff-1932-2024.svg", plot = the_graph, width = 12, height = 11, units = "in")
