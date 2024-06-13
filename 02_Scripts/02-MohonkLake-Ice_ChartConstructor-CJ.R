@@ -10,15 +10,38 @@ raw_ice_data <- readr::read_csv(file = "./01_Data/IceData/MohonkLake-IceOnIceOff
 # "Ice Out" -> Date of ice recede on lake
 # "Length" -> The amount of days the ice was on the lake before it receded
 # round() is used to prevent fractional days from appearing (They occur because of Daylight Savings)
-# Winter Year -> The current winter year [DESCRIPTION NEEDS UPDATING 6/12/24]
+# "Winter Year" -> The year the winter started
+# "Current Phase" -> The current "Ice phase" (1, 2 or 3) [PROBABLY SHOULD BE RENAMED]
 
 # To do this we must first: Combine all of the data into 2 columns (Ice In & Ice Out)
 # We can use the "c" function which combines its arguments to a vector (array)
 # The `` syntax allows us to declare a variable using special characters
-ice_data_combined <- tibble(
-  `Ice In` = c(raw_ice_data$ICEIN_1, raw_ice_data$ICEIN_2, raw_ice_data$ICEIN_3),
-  `Ice Out` = c(raw_ice_data$ICEOUT_1, raw_ice_data$ICEOUT_2, raw_ice_data$ICEOUT_3)
+
+# Adds all of the elements from ICEIN_1 and ICEOUT_1
+ice_data_combined_phase_1 <- tibble(
+  `Ice In` = raw_ice_data$ICEIN_1,
+  `Ice Out` = raw_ice_data$ICEOUT_1,
+  `Current Phase` = "First"
 )
+
+# Adds all of the elements from ICEIN_2 and ICEOUT_2
+ice_data_combined_phase_2 <- ice_data_combined_phase_1 |>
+  tibble::add_row(
+    `Ice In` = raw_ice_data$ICEIN_2,
+    `Ice Out` = raw_ice_data$ICEOUT_2,
+    `Current Phase` = "Second"
+  )
+
+# Adds all of the elements from ICEIN_3 and ICEOUT_3
+ice_data_combined_phase_3 <- ice_data_combined_phase_2 |>
+  tibble::add_row(
+    `Ice In` = raw_ice_data$ICEIN_3,
+    `Ice Out` = raw_ice_data$ICEOUT_3,
+    `Current Phase` = "Third"
+  )
+
+# Now, all of the data has been combined
+ice_data_combined <- ice_data_combined_phase_3
 
 # Then, filter out data with "NA"'s and "No date"'s
 # dplyr::filter returns a tibble/dataframe where all the expressions passed evaluate to true
@@ -41,9 +64,10 @@ ice_data_with_length <- ice_data_as_dates |>
   )
 
 # Then, let's add "Winter Year"
+# [THIS FORMULA IS... FLAWED (What if Ice Out occurs in the same year?) 6/13/24]
 ice_data_with_winter_year <- ice_data_with_length |>
   dplyr::mutate(
-    `Winter Year` = as.character(lubridate::year(`Ice Out`))
+    `Winter Year` = as.character(lubridate::year(`Ice Out` - lubridate::years(1)))
   )
 
 # Then, let's sort the dates!!
@@ -65,11 +89,23 @@ ice_data_completed <- ice_data_sorted |>
 # Now we are complete! Let's view the result...
 View(ice_data_completed)
 
-# # Now, let's graph it!
-# ggplot(ice_data_completed, aes(
-#     y = `Years`,
-#     x = yday(`Ice In (Year)`),
-#     xend = yday(`Ice Out (Year)`),
-#     yend = `Years`
-#   )
-# )
+# Time to graph1!!
+the_graph <- ggplot(
+  ice_data_completed,
+  aes(
+    x = `Winter Year`,
+    y = `Length (Days)`,
+    fill = `Current Phase`
+  )
+) + geom_bar(
+  stat = "identity",
+  width = .7
+) + theme(
+  axis.text.x = element_text(angle = 45)
+) + scale_x_discrete(
+  breaks = seq(1920, 2025, 5)
+)
+
+# Save the graph
+# Because the data is not complete, one label is missing on the x axis
+ggsave("Mohonk Ice Chart.svg", plot = the_graph, width = 12, height = 11, units = "in")
