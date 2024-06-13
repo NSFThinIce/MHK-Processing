@@ -108,4 +108,4 @@ the_graph <- ggplot(
 
 # Saves the graph
 # Because the data is not complete, one label is missing on the x axis
-ggsave("MohonkLake-IceOnIceOff-1932-2024.svg", plot = the_graph, width = 12, height = 11, units = "in")
+ggsave("MohonkLake-IceOnIceOff-1932-2024.png", plot = the_graph, width = 12, height = 11, units = "in")
