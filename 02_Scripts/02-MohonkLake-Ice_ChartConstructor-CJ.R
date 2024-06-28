@@ -1,27 +1,28 @@
-# Loads the tidyverse packages which are being utilized below
+# Loads the tidyverse and lubridate packages which are being utilized below
 library(tidyverse)
 library(lubridate)
 
-# Loads the MohonkLake ice data from the CSV file
+# Reads the MohonkLake ice data from the CSV file and stores it in raw_ice_data
 raw_ice_data <- readr::read_csv(file = "./01_Data/IceData/MohonkLake-IceOnIceOff-1932-2024.csv")
 
-# Creates a Dataframe with the columns:
-# "Ice In" -> Date of ice appearing on lake
-# "Ice Out" -> Date of ice recede on lake
-# "Length" -> The amount of days the ice was on the lake before it receded
-# round() is used to prevent fractional days from appearing (They occur because of Daylight Savings)
-# "Winter Year" -> The year the winter started
-# "Current Phase" -> The current "Ice phase" (1, 2 or 3) [PROBABLY SHOULD BE RENAMED 6/13/24]
+# The code below creates a Dataframe with the columns:
+# "Ice In" -> Date of ice forming on lake
+# "Ice Out" -> Date of ice melting on lake
+# "Length" -> The amount of days the ice was on the lake before it melted
+# "Winter Year" -> The year winter started
+# "Freeze-thaw Cycle" -> Some years have multiple periods where ice forms and melts, this keeps
+# track of those periods
 
 # To do this we must first: Combine all of the data into 2 columns (Ice In & Ice Out)
-# We can use the "c" function which combines its arguments to a vector (array)
+# We can use the "c" function which combines its arguments to a vector (array for CS majors)
 # The `` syntax allows us to declare a variable using special characters
+# Also, to label each period, data is added in steps starting with ICEIN_1 and ICEOUT_1
 
 # Adds all of the elements from ICEIN_1 and ICEOUT_1
 ice_data_combined_phase_1 <- tibble(
   `Ice In` = raw_ice_data$ICEIN_1,
   `Ice Out` = raw_ice_data$ICEOUT_1,
-  `Current Phase` = "First"
+  `Freeze-thaw Cycle` = "First"
 )
 
 # Adds all of the elements from ICEIN_2 and ICEOUT_2
@@ -29,7 +30,7 @@ ice_data_combined_phase_2 <- ice_data_combined_phase_1 |>
   tibble::add_row(
     `Ice In` = raw_ice_data$ICEIN_2,
     `Ice Out` = raw_ice_data$ICEOUT_2,
-    `Current Phase` = "Second"
+    `Freeze-thaw Cycle` = "Second"
   )
 
 # Adds all of the elements from ICEIN_3 and ICEOUT_3
@@ -37,40 +38,52 @@ ice_data_combined_phase_3 <- ice_data_combined_phase_2 |>
   tibble::add_row(
     `Ice In` = raw_ice_data$ICEIN_3,
     `Ice Out` = raw_ice_data$ICEOUT_3,
-    `Current Phase` = "Third"
+    `Freeze-thaw Cycle` = "Third"
   )
 
 # Now, all of the data has been combined
 ice_data_combined <- ice_data_combined_phase_3
 
-# Then, filter out data with "NA"'s and "No date"'s
-# dplyr::filter returns a tibble/dataframe where all the expressions passed evaluate to true
-ice_data_filtered <- ice_data_combined |>
-  dplyr::filter(!is.na(`Ice In`) & !is.na(`Ice Out`) & `Ice In` != "No date" & `Ice Out` != "No date")
-
-# Now, there are only dates! Let's convert them to valid dates!
+# To prevent lubridate from spitting out errors, all of the "No date" text is converted to NA
+# However, if the data is not "No date", then it will stay the same
 # dplyr::mutate returns a tibble/dataframe with all of the redefined variables (var = new value)
 # set to a new value
+ice_data_filtered <- ice_data_combined |>
+  dplyr::mutate(
+    `Ice In` = ifelse(`Ice In` == "No date", NA, `Ice In`),
+    `Ice Out` = ifelse(`Ice Out` == "No date", NA, `Ice Out`)
+  )
+
+# Converts `Ice In` and `Ice Out` to valid dates using lubridate::mdy
 ice_data_as_dates <- ice_data_filtered |>
   dplyr::mutate(
     `Ice In` = lubridate::mdy(`Ice In`, tz = "America/New_York"),
     `Ice Out` = lubridate::mdy(`Ice Out`, tz = "America/New_York")
   )
 
-# Now, let's add "Length"
+# The length of a freeze-thaw cycle is equal to the magnitude between when the ice arrived (Ice In)
+# and the ice departed (Ice Out)
+# round() is used to prevent fractional days from appearing (They occur because of Daylight Savings)
 ice_data_with_length <- ice_data_as_dates |>
   dplyr::mutate(
     Length = round(difftime(`Ice Out`, `Ice In`, units = "days", tz = "America/New_York"))
   )
 
-# Then, let's add "Winter Year"
-# [THIS FORMULA IS... FLAWED (What if Ice Out occurs in the same year?) 6/13/24]
+# Winter year is calculated by subtracting 1 year to the year the ice melted (Ice Out), however,
+# if the year the ice melted occurred during December, then the winter year would be the same
+# year
 ice_data_with_winter_year <- ice_data_with_length |>
   dplyr::mutate(
-    `Winter Year` = as.character(lubridate::year(`Ice Out` - lubridate::years(1)))
+    `Winter Year` = as.character(
+      ifelse(
+        lubridate::month(`Ice Out`) != 12,
+        lubridate::year(`Ice Out` - lubridate::years(1)),
+        lubridate::year(`Ice Out`)
+      )
+   )
   )
 
-# Then, let's sort the dates!!
+# Sorts the dates based on when the ice arrived (Ice In)
 # dplyr::arrange takes a variable name and returns a tibble/dataframe with all of the rows
 # sorted by said variable
 ice_data_sorted <-  ice_data_with_winter_year |>
@@ -87,25 +100,31 @@ ice_data_completed <- ice_data_sorted |>
   )
 
 # Now we are complete! Let's view the result...
-View(ice_data_completed)
+# View(ice_data_completed)
+# Uncomment the above code to view the result
 
-# Time to graph1!! [COMMENTS MISSING 6/13/24]
-the_graph <- ggplot(
-  ice_data_completed,
+# Creates a graph using the fully processed tibble/dataframe from above and sets:
+# The x-axis as "Winter Year"
+# The y-axis as "Length (Days)"
+# The colors for each bar depending on their "Freeze-thaw Cycle"
+# The x scale goes by every 5 years and the y scale goes by every 10 days
+ice_chart_graph_completed <- ice_data_completed |> ggplot(
   aes(
     x = `Winter Year`,
     y = `Length (Days)`,
-    fill = `Current Phase`
+    fill = `Freeze-thaw Cycle`
   )
 ) + geom_bar(
   stat = "identity",
   width = .7
-) + theme(
-  axis.text.x = element_text(angle = 45)
 ) + scale_x_discrete(
-  breaks = seq(1920, 2025, 5)
-)
+  breaks = seq(1920, 2025, 5) 
+) + scale_y_continuous(
+  breaks = seq(0, 100, 10)
+) + theme(
+  text = element_text(size = 20),
+  axis.text.x = element_text(angle = 45)
+) + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))
 
-# Saves the graph
-# Because the data is not complete, one label is missing on the x axis
-ggsave("MohonkLake-IceOnIceOff-1932-2024.png", plot = the_graph, width = 12, height = 11, units = "in")
+# Saves the graph as a 12in = width by 6in = height PNG file
+ggsave("MohonkLake-IceOnIceOff-1932-2024.png", plot = ice_chart_graph_completed, width = 12, height = 6, units = "in")
