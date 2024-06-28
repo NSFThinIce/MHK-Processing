@@ -3,7 +3,7 @@ library(tidyverse)
 library(lubridate)
 
 # Reads the MohonkLake ice data from the CSV file and stores it in raw_ice_data
-raw_ice_data <- readr::read_csv(file = "./01_Data/IceData/MohonkLake-IceOnIceOff-1932-2024.csv")
+raw_ice_data <- readr::read_csv(file.path(".", "01_Data", "IceData", "MohonkLake-IceOnIceOff-1932-2024.csv"))
 
 # The code below creates a Dataframe with the columns:
 # "Ice In" -> Date of ice forming on lake
@@ -127,4 +127,4 @@ ice_chart_graph_completed <- ice_data_completed |> ggplot(
 ) + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))
 
 # Saves the graph as a 12in = width by 6in = height PNG file
-ggsave("MohonkLake-IceOnIceOff-1932-2024.png", plot = ice_chart_graph_completed, width = 12, height = 6, units = "in")
+ggsave(file.path("03_Graphs", "01-MohonkLake-IceOnIceOff-1932-2024.png"), plot = ice_chart_graph_completed, width = 12, height = 6, units = "in")
