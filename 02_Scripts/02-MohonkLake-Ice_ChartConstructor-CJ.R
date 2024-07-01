@@ -108,7 +108,8 @@ ice_data_completed <- ice_data_sorted |>
 # The y-axis as "Length (Days)"
 # The colors for each bar depending on their "Freeze-thaw Cycle"
 # The x scale goes by every 5 years and the y scale goes by every 10 days
-ice_chart_graph_completed <- ice_data_completed |> ggplot(
+ice_chart_graph_completed <- ggplot(
+  ice_data_completed,
   aes(
     x = `Winter Year`,
     y = `Length (Days)`,
@@ -124,7 +125,7 @@ ice_chart_graph_completed <- ice_data_completed |> ggplot(
 ) + theme(
   text = element_text(size = 20),
   axis.text.x = element_text(angle = 45)
-) + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))
+) + scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))
 
 # Saves the graph as a 12in = width by 6in = height PNG file
 ggsave(file.path("03_Graphs", "01-MohonkLake-IceOnIceOff-1932-2024.png"), plot = ice_chart_graph_completed, width = 12, height = 6, units = "in")
