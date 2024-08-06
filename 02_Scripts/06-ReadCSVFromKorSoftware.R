@@ -148,10 +148,5 @@ reformat_kor_csv_file <- function(kor_csv_file_path) {
   return(converted_kor_csv_file)
 }
 
-?rename
 
 View(reformat_kor_csv_file("Kor Measurement File Export - 080624 141005.csv"))
-
-?dplyr::relocate
-?ifelse
-?stop
