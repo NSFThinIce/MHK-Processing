@@ -18,7 +18,7 @@ reformat_kor_csv_file <- function(kor_csv_file_path) {
   }
 
   # Read the CSV file
-  kor_csv_file <- readr::read_csv(file = kor_csv_file_path)
+  kor_csv_file <- readr::read_csv(kor_csv_file_path, locale = readr::locale(encoding = "UTF-16LE"))
 
   # Begin the conversion process
   converted_kor_csv_file <- kor_csv_file |>
@@ -149,7 +149,8 @@ reformat_kor_csv_file <- function(kor_csv_file_path) {
 }
 
 ?rename
-View(reformat_kor_csv_file(readr::read_csv(file = file.path("Kor Measurement File Export - 061824 141632.csv"))))
+
+View(reformat_kor_csv_file("Kor Measurement File Export - 080624 141005.csv"))
 
 ?dplyr::relocate
 ?ifelse
