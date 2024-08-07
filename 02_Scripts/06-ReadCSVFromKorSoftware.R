@@ -23,23 +23,38 @@ reformat_kor_csv_file <- function(kor_csv_file_path) {
   # Begin the conversion process
   converted_kor_csv_file <- kor_csv_file |>
     tibble::add_column(
+  converted_kor_csv_file <- kor_csv_file |>
+    tibble::add_column(
       `lakeID` = "MHK",
       .before = `TIME`
+    ) |>
+    dplyr::relocate(
     ) |>
     dplyr::relocate(
       `DATE`,
       .before = `TIME`
     ) |>
     dplyr::rename(
+    ) |>
+    dplyr::rename(
       `Date` = `DATE`,
       `Time` = `TIME`
+    ) |>
+    tibble::add_column(
     ) |>
     tibble::add_column(
       `Depth_m` = seq(0, 12, 0.25),
       .after = `Time`
     ) |>
     dplyr::rename(
+    ) |>
+    dplyr::rename(
       `temp_degC` = `TEMP (°C)-15F102368`
+    ) |>
+    dplyr::mutate(
+      `FAULT CODE` = NA
+    ) |>
+    dplyr::relocate(
     ) |>
     dplyr::mutate(
       `FAULT CODE` = NA
@@ -49,7 +64,11 @@ reformat_kor_csv_file <- function(kor_csv_file_path) {
       .after = "temp_degC"
     ) |>
     dplyr::rename(
+    ) |>
+    dplyr::rename(
       `doConcentration_mgpL` = `DO (MG/L)-13C101369`
+    ) |>
+    dplyr::relocate(
     ) |>
     dplyr::relocate(
       `DO (% SAT)-13C101369`,
