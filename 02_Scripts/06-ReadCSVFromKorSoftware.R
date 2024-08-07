@@ -1,152 +1,42 @@
-# Loads the necessary libraries
-library(tidyverse) # provides the tidyverse packages
-library(lubridate) # provides useful functions when working with dates
-library(assertthat) # provides is.string() function and several others
+# Load necessary library
+library(readr)
+library(knitr)
 
-# This code automatically reads in a CSV file from Kor Software
-# and re-formats it to follow the existing specification as defined here: [LINK TO FORMAT NEEDED 7/2/24]
-reformat_kor_csv_file <- function(kor_csv_file_path) {
-  # Ensure the data-type passed for kor_csv_file_path is a string
-  # If it isn't a string, then the code below must not run
-  if (!is.string(kor_csv_file_path)) {
-    stop("kor_csv_file_path is not a string (vector/array of characters)")
-  }
+# Read the CSV file with the appropriate encoding
+tab <- read_csv("Kor Measurement File Export - 080624 141005.csv",col_names = FALSE, locale = locale(encoding = "UTF-16"))
 
-  # If the file does not exist, then the code below it should not run
-  if (!file.exists(kor_csv_file_path)) {
-    stop(c("The following path: '", kor_csv_file_path, "' does not point to anything"))
-  }
+tab <- tab[-1, ]
 
-  # Read the CSV file
-  kor_csv_file <- readr::read_csv(kor_csv_file_path, locale = readr::locale(encoding = "UTF-16LE"))
-
-  # Begin the conversion process
-  converted_kor_csv_file <- kor_csv_file |>
-    tibble::add_column(
-      `lakeID` = "MHK",
-      .before = `TIME`
-    ) |>
-    dplyr::relocate(
-      `DATE`,
-      .before = `TIME`
-    ) |>
-    dplyr::rename(
-      `Date` = `DATE`,
-      `Time` = `TIME`
-    ) |>
-    tibble::add_column(
-      `Depth_m` = seq(0, 12, 0.25),
-      .after = `Time`
-    ) |>
-    dplyr::rename(
-      `temp_degC` = `TEMP (°C)-15F102368`
-    ) |>
-    dplyr::mutate(
-      `FAULT CODE` = NA
-    ) |>
-    dplyr::relocate(
-      `DO (MG/L)-13C101369`,
-      .after = "temp_degC"
-    ) |>
-    dplyr::rename(
-      `doConcentration_mgpL` = `DO (MG/L)-13C101369`
-    ) |>
-    dplyr::relocate(
-      `DO (% SAT)-13C101369`,
-      .after = `doConcentration_mgpL`
-    ) |>
-    dplyr::rename(
-      `doSaturation_percent` = `DO (% SAT)-13C101369`
-    ) |>
-    dplyr::relocate(
-      `CHLOROPHYLL (RFU)-14C102008`,
-      .after = `doSaturation_percent`
-    ) |>
-    dplyr::rename(
-      `chlorophyll _RFU` = `CHLOROPHYLL (RFU)-14C102008`
-    ) |>
-    dplyr::relocate(
-      `PHYCOCYANIN (RFU)-14C102008`,
-      .after = `chlorophyll _RFU`
-    ) |>
-    dplyr::rename(
-      `phycocyaninBGA_RFU-14C102008` = `PHYCOCYANIN (RFU)-14C102008`
-    ) |>
-    tibble::add_column(
-      `turbidity_Fnu` = NA,
-      .after = `phycocyaninBGA_RFU-14C102008`
-    ) |>
-    dplyr::relocate(
-      `PH-15H100582`,
-      .after = `turbidity_Fnu`
-    ) |>
-    dplyr::rename(
-      `pH` = `PH-15H100582`
-    ) |>
-    tibble::add_column(
-      `orp_MV` = NA,
-      .after = `pH`
-    ) |>
-    dplyr::relocate(
-      `SP COND (µS/CM)-15F102368`,
-      .after = `orp_MV`
-    ) |>
-    dplyr::rename(
-      `specificConductivity_uSpcm` = `SP COND (µS/CM)-15F102368`
-    ) |>
-    dplyr::relocate(
-      `SAL (PSU)-15F102368`,
-      .after = `specificConductivity_uSpcm`
-    ) |>
-    dplyr::rename(
-      `salinity_psu` = `SAL (PSU)-15F102368`
-    ) |>
-    dplyr::relocate(
-      `TDS (MG/L)-15F102368`,
-      .after = `salinity_psu`
-    ) |>
-    dplyr::rename(
-      `tds_mgpL` = `TDS (MG/L)-15F102368`
-    ) |>
-    tibble::add_column(
-      `waterPressure_barA` = NA,
-      .after = "tds_mgpL"
-    ) |>
-    dplyr::relocate(
-      `GPS LATITUDE (°)-24C102759`,
-      .after = `waterPressure_barA`
-    ) |>
-    dplyr::rename(
-      `latitude` = `GPS LATITUDE (°)-24C102759`
-    ) |>
-    dplyr::relocate(
-      `GPS LONGITUDE (°)-24C102759`,
-      .after = `latitude`
-    ) |>
-    dplyr::rename(
-      `longitude` = `GPS LONGITUDE (°)-24C102759`
-    ) |>
-    dplyr::relocate(
-      `ALTITUDE (M)-24C102759`,
-      .after = `longitude`
-    ) |>
-    dplyr::rename(
-      `altitude_m` = `ALTITUDE (M)-24C102759`
-    ) |>
-    dplyr::relocate(
-      `BAROMETER (MMHG)-24C102759`,
-      .after = `altitude_m`
-    ) |>
-    dplyr::rename(
-      `barometerAirHandheld_mbarss` = `BAROMETER (MMHG)-24C102759`
-    )
-
-    converted_kor_csv_file <- converted_kor_csv_file <- dplyr::select(
-      -(grep("barometerAirHandheld_mbarss", colnames(converted_kor_csv_file)):nrow(converted_kor_csv_file))
-    )
-
-  return(converted_kor_csv_file)
-}
+depths_vector <- seq(from = 0, to = 12, by = 0.25)
 
 
-View(reformat_kor_csv_file("Kor Measurement File Export - 080624 141005.csv"))
+# Create a data frame with the specified headings
+data <- data.frame(
+   lakeID = rep("MHK", nrow(tab)),
+   Date = tab$X2,
+   Time = tab$X1,
+   Depth_m = depths_vector,
+   temp_degC = tab$X24,
+   doConcentration_mgpL = tab$X15,
+   doSaturation_percent = tab$X14,
+   chlorophyll_RFU = tab$X8,
+   phycocyaninBGA_RFU_14C102008 = tab$X6,
+   turbidity_Fnu = rep(NA, nrow(tab)),
+   pH = tab$X20,
+   orp_MV = rep(NA, nrow(tab)),
+   specificConductivity_uSpcm = tab$X10,
+   salinity_psu = tab$X12,
+   tds_mgpL = tab$X11,
+   waterPressure_barA = rep(NA, nrow(tab)),
+   latitude = tab$X17,
+   longitude = tab$X18,
+   altitude_m = tab$X19,
+   barometerAirHandheld_mbars = tab$X7
+)
+
+view(data)
+
+write_csv(data,"D:/hi.csv")
+
+
+
