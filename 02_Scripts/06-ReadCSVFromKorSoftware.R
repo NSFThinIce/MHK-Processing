@@ -7,8 +7,11 @@ tab <- read_csv("Kor Measurement File Export - 080624 141005.csv",col_names = FA
 
 tab <- tab[-1, ]
 
-depths_vector <- seq(from = 0, to = 12, by = 0.25)
-
+if (nrow(tab) == 49) {
+  depths_vector <- seq(from = 0, to = 12, by = 0.25)
+} else {
+  depths_vector <- rep(NA, nrow(tab))
+}
 
 # Create a data frame with the specified headings
 data <- data.frame(
@@ -36,7 +39,7 @@ data <- data.frame(
 
 view(data)
 
-write_csv(data,"D:/hi.csv")
+write_csv(data,paste0("MHK_",tab$X2, ".csv"))
 
 
 
