@@ -29,7 +29,7 @@ raw_file <- file(description = kor_file_path, encoding = possible_encoding)
 # Read each line and check to see if "rep=" is the first line
 lines <- readLines(raw_file)
 
-if (lines[1] == "rep=,") {
+if (lines[1] == "sep=,") {
   lines <- lines[-1] # Removes the first line
 }
 

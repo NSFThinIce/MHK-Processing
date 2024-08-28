@@ -3,7 +3,7 @@ library(readr)
 library(knitr)
 
 # Read the CSV file with the appropriate encoding
-tab <- read_csv("Kor Measurement File Export - 080624 141005.csv",col_names = FALSE, locale = locale(encoding = "UTF-16"))
+tab <- read_csv("KOR_SAMPLING_DAY_8-28-2024_EXPORT.csv",col_names = FALSE, locale = locale(encoding = "UTF-8"))
 
 tab <- tab[-1, ]
 
@@ -37,9 +37,9 @@ data <- data.frame(
    barometerAirHandheld_mbars = tab$X7
 )
 
-view(data)
+View(data)
 
-write_csv(data,paste0("MHK_",tab$X2, ".csv"))
+write_csv(data,"KOR_SAMPLING_DAY_8-28-2024_EXPORT.csv")
 
 
 
