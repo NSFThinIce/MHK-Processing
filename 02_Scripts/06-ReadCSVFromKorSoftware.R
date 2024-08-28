@@ -7,9 +7,11 @@
 library(readr)
 library(knitr)
 
+file_name <- file.path("File Name")
+
 # Read the CSV file with the appropriate encoding
 #reads in the csv into tab(table) 
-tab <- read_csv("D:/MOHONK_DATA/KOR_SAMPLING_DAY_8-5-2024_EXPORT.csv",col_names = FALSE, locale = locale(encoding = "UTF-8"))
+tab <- read_csv(file_name,col_names = FALSE, locale = locale(encoding = "UTF-8"))
 
 #gets rid of the heading in the table
 tab <- tab[-1, ]
@@ -49,15 +51,15 @@ data <- data.frame(
 #flips the rows of the table
 data <- data[nrow(data):1, ]
 
-#views the tabbe
-view(data)
+#views the tibble
+View(data)
 
 # Format the date to be file name friendly
 date <- gsub("[^0-9]", "_", tab$X2[1])  # Remove any non-numeric characters
 
 
 # Save the data frame to a CSV file with the new file path
-write_csv(data, paste0("D:/MHK_", date, ".csv"))
+write_csv(data, file_name)
 
 
 
