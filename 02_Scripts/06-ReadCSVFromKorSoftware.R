@@ -7,11 +7,11 @@
 library(readr)
 library(knitr)
 
-file_name <- file.path("File Name")
+file_name <- file.path("KOR_SAMPLING_DAY_9-4-2024_EXPORT.csv")
 
 # Read the CSV file with the appropriate encoding
 #reads in the csv into tab(table) 
-tab <- read_csv(file_name,col_names = FALSE, locale = locale(encoding = "UTF-8"))
+tab <- read_csv(file_name, col_names = FALSE, locale = locale(encoding = "UTF-8"))
 
 #gets rid of the heading in the table
 tab <- tab[-1, ]
