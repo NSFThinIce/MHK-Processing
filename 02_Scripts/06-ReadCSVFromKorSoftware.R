@@ -7,7 +7,7 @@
 library(readr)
 library(knitr)
 
-file_name <- file.path("KOR_SAMPLING_DAY_9-4-2024_EXPORT.csv")
+file_name <- file.path("KOR_SAMPLING_DAY_10-9-2024_EXPORT.csv")
 
 # Read the CSV file with the appropriate encoding
 #reads in the csv into tab(table) 
@@ -59,7 +59,7 @@ date <- gsub("[^0-9]", "_", tab$X2[1])  # Remove any non-numeric characters
 
 
 # Save the data frame to a CSV file with the new file path
-write_csv(data, file_name)
+write_csv(data, paste("MHK_", date, ".csv", sep = ""))
 
 
 

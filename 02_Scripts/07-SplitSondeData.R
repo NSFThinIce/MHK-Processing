@@ -3,7 +3,7 @@ library(readr) # Reads data
 library(dplyr) # Splits data
 
 ## Constructs an OS independent path to the exported Kor file
-kor_file_path <- file.path("Kor Export.csv")
+kor_file_path <- file.path("MHK_Everything.csv")
 
 ## Ensure the file exists
 if (!file.exists(kor_file_path)) {
