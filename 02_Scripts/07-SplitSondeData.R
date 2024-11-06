@@ -58,6 +58,9 @@ split_data <- exported_kor_file_data |>
   group_by(DATE) |>
   group_split()
 
+## Change the working directory of the R program (All Kor Exports should go in the .kor_exports folder)
+setwd(".kor_exports")
+
 ## Save each tibble in their own file
 # The name of each file is of the format KOR_SAMPLING_DAY_`Date of sampling`_EXPORT.csv
 for (dataframe in split_data) {
@@ -65,10 +68,12 @@ for (dataframe in split_data) {
     dataframe,
     paste( # Concatenates all of the strings
       sep = "", # The separater between each string will be nothing (by default it's a blank space)
-      "KOR_SAMPLING_DAY_",
-      gsub("/", "-", as.character(dataframe$DATE[1])), # Replaces the slashes with dashes
+      "MHK_",
+      gsub("/", "_", as.character(dataframe$DATE[1])), # Replaces the slashes with underscores
       # and as.character converts the value returned from dataframe$DATE[1] to a string
       "_EXPORT.csv"
     )
   )
 }
+# Set the working directory back to what it was
+setwd("..")
