@@ -91,10 +91,14 @@ split_data <- exported_kor_file_data |>
   group_by(DATE) |>
   group_split()
 
-## Save each tibble in their own file
-# The name of each file is of the format KOR_SAMPLING_DAY_`Date of sampling`_EXPORT.csv
-
+## Now, it's time to export all of the data in the correct format!
+# for each dataframe in the split_data dataframe, do
 for (dataframe in split_data) {
+  ## Overwrite the dataframe's column names for convenience 
+  # (The names are X1 to XN where N is the number of columns. This was used before these two scripts 
+  # were combined. idk why it was done this way but I don't see any issues with it as of now)
+  colnames(dataframe) <- paste("X", 1:ncol(dataframe), sep = "")
+
   #if there are 49 rows in the table then make a vector from 12 - 0 with step -.25
   #else fill the vector with NA with the vector being how many rows are in tab
   if (nrow(dataframe) == 49) {
@@ -104,7 +108,7 @@ for (dataframe in split_data) {
   }
 
   # Create a data frame with the headings of the formatted csv
-  data <- data.frame(
+  formatted_data <- data.frame(
      lakeID = rep("MHK", nrow(dataframe)),
      Date = dataframe$X2,
      Time = dataframe$X1,
@@ -126,30 +130,29 @@ for (dataframe in split_data) {
      altitude_m = dataframe$X19,
      barometerAirHandheld_mbars = dataframe$X7
   )
-  #flips the rows of the dataframe
-  data <- data[nrow(data):1, ]
 
-  #views the tibble
-  # View(data)
-  stop()
+  #flips the rows of the dataframe
+  formatted_data <- formatted_data[nrow(formatted_data):1, ]
 
   # Format the date to be file name friendly
-  date <- gsub("[^0-9]", "_", dataframe$X2[1])  # Remove any non-numeric characters
+  date <- dataframe$X2[1]
+  date_as_string <- sub("(\\d+)/(\\d+)/(\\d{4})$", "\\3/\\1/\\2", as.character(date))
+
+  ## If there are no leading zeros for the month or day, then append a 0 to the string
+  date_split <- strsplit(date_as_string, "/")
+
+  year <- date_split[[1]][1]
+  month <- date_split[[1]][2]
+  day <- date_split[[1]][3]
+
+  if (nchar(day) < 2) day <- paste("0", day, sep = "")
+  if (nchar(month) < 2) month <- paste("0", month, sep = "")
+
+  date_as_string <- paste(year, month, day, sep = "_")
 
   # Save the data frame to a CSV file with the new file path
   write_csv(
-    data, 
+    formatted_data, 
     file.path("KorExports", 
-      paste("MHK_", gsub("/", "_", as.character(date)), "_profile.csv", sep = "")))
+      paste("MHK_", date_as_string, "_profile.csv", sep = "")))
 }
-
-# write_csv(
-#     dataframe,
-#     paste( # Concatenates all of the strings
-#       sep = "", # The separater between each string will be nothing (by default it's a blank space)
-#       "MHK_",
-#       gsub("/", "_", as.character(dataframe$DATE[1])), # Replaces the slashes with underscores
-#       # and as.character converts the value returned from dataframe$DATE[1] to a string
-#       "_EXPORT.csv"
-#     )
-#   )

@@ -4,4 +4,4 @@
 *.Ruserdata
 .lintr
 .Rproj.user
-.kor_exports/*
+ExportedData.*
