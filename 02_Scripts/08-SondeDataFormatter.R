@@ -101,10 +101,14 @@ for (dataframe in split_data) {
 
   #if there are 49 rows in the table then make a vector from 12 - 0 with step -.25
   #else fill the vector with NA with the vector being how many rows are in tab
+  #and set data_input_error = true
+  data_input_error <- FALSE
+
   if (nrow(dataframe) == 49) {
     depths_vector <- seq(from = 12, to = 0, by = -0.25)
   } else {
     depths_vector <- rep(NA, nrow(dataframe))
+    data_input_error <- TRUE
   }
 
   # Create a data frame with the headings of the formatted csv
@@ -150,9 +154,13 @@ for (dataframe in split_data) {
 
   date_as_string <- paste(year, month, day, sep = "_")
 
+  saved_file_name <- ""
+  if (data_input_error == TRUE) {
+    saved_file_name <- paste("MHK_", date_as_string, "_profile[MISTAKE FOUND].csv", sep = "")
+  } else {
+    saved_file_name <- paste("MHK_", date_as_string, "_profile.csv", sep = "")
+  }
+
   # Save the data frame to a CSV file with the new file path
-  write_csv(
-    formatted_data, 
-    file.path("KorExports", 
-      paste("MHK_", date_as_string, "_profile.csv", sep = "")))
+  write_csv(formatted_data, file.path("KorExports", saved_file_name))
 }
