@@ -160,7 +160,11 @@ for (dataframe in split_data) {
   } else {
     saved_file_name <- paste("MHK_", date_as_string, "_profile.csv", sep = "")
   }
-
-  # Save the data frame to a CSV file with the new file path
-  write_csv(formatted_data, file.path("KorExports", saved_file_name))
+  # The location of where the file will be saved
+  file_save_path <- file.path("KorExports", saved_file_name)
+  
+  # If the file is already there, then DO NOT overwrite it!
+  if (!file.exists(file_save_path))
+    # Save the data frame to a CSV file with the new file path
+    write_csv(formatted_data, file_save_path)
 }
