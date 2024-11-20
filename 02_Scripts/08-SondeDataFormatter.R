@@ -33,9 +33,9 @@ library(dplyr) # Splits data
 
 ## Constructs an OS independent path to the exported Kor file
 if (prefixed_text == TRUE) {
-  kor_file_path <- file.path("..", "KorExports", "ExportedData.csv")
+  kor_file_path <- file.path("..", "01_Data", "MohonkSondeData", "ExportedData.csv")
 } else {
-  kor_file_path <- file.path("KorExports", "ExportedData.csv")
+  kor_file_path <- file.path("01_Data", "MohonkSondeData", "ExportedData.csv")
 }
 
 ## Ensure the file exists
@@ -161,7 +161,7 @@ for (dataframe in split_data) {
     saved_file_name <- paste("MHK_", date_as_string, "_profile.csv", sep = "")
   }
   # The location of where the file will be saved
-  file_save_path <- file.path("KorExports", saved_file_name)
+  file_save_path <- file.path("01_Data", "MohonkSondeData", saved_file_name)
   
   # If the file is already there, then DO NOT overwrite it!
   if (!file.exists(file_save_path))
