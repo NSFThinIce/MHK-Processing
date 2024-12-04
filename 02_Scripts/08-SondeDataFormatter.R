@@ -91,6 +91,13 @@ split_data <- exported_kor_file_data |>
   group_by(DATE) |>
   group_split()
 
+
+## Helper function
+# Creates the name for the file when it's saved
+create_file_name <- function (date_as_string, error_appended = "") {
+  return(paste("MHK_", date_as_string, "_profile", error_appended, ".csv", sep = ""))
+}
+
 ## Now, it's time to export all of the data in the correct format!
 # for each dataframe in the split_data dataframe, do
 for (dataframe in split_data) {
@@ -156,15 +163,24 @@ for (dataframe in split_data) {
 
   saved_file_name <- ""
   if (data_input_error == TRUE) {
-    saved_file_name <- paste("MHK_", date_as_string, "_profile[MISTAKE FOUND].csv", sep = "")
+    saved_file_name <- create_file_name(date_as_string, "[MISTAKE FOUND]")
   } else {
-    saved_file_name <- paste("MHK_", date_as_string, "_profile.csv", sep = "")
+    saved_file_name <- create_file_name(date_as_string)
   }
   # The location of where the file will be saved
   file_save_path <- file.path("01_Data", "MohonkSondeData", saved_file_name)
   
   # If the file is already there, then DO NOT overwrite it!
-  if (!file.exists(file_save_path))
+  if (!file.exists(file_save_path)) {
     # Save the data frame to a CSV file with the new file path
-    write_csv(formatted_data, file_save_path)
+    # Also, if the file has mistakes, then check to see if the file was corrected before writing the file with [MISTAKE FOUND] appended to it
+    if (data_input_error == TRUE) {
+      file_path_without_mistakes <- file.path("01_Data", "MohonkSondeData", create_file_name(date_as_string))
+      if (!file.exists(file_path_without_mistakes)) {
+        write_csv(formatted_data, file_save_path)
+      }
+    } else {
+      write_csv(formatted_data, file_save_path)
+    }
+  }
 }
