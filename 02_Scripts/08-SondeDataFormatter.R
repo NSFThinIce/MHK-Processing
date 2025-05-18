@@ -1,47 +1,31 @@
-## This script is a combining of both 07-SplitSondeData.R and 06-ReadCSVFromKorSoftware.R 
+## This script is a combining of both 07-SplitSondeData.R and 06-ReadCSVFromKorSoftware.R
 # which were used to automatically format the data exported from Kor. Now, this script handles
 # that
 ## Authors - Waheed Saroyia and Chrisopher Jamieson
 
 ### [INSTRUCTIONS]
 # In order to have the data be automatically formatted, the exported CSV file must be renamed to
-# "ExportedData" and put into the "KorExports" folder. Then, this script can be exectuted.
-
-## ALSO, ensure that you are executing this either in the folder "On Thin Ice Graphs" or the folder
-# "02_Scripts". The script will yell at you if neither of these conditions are true!
-
-## Ensures that the current working directories are supported by the script
-# getwd() gets the current working directory; an absolute path to the current folder (C:\Users\John\example.pdf)
-# strsplit splits a string at specific patterns. The pattern in this case is ".Platform$file.sep" which
-# is a dataframe that has data about the OS that R is running on. For this case, this script is using file.sep
-# to get the seperator that the current platform is using and then splitting the string around that seperator
-# OS seperators are either '\' on Windows or '/' on Unix based systems (Mac and Linux)
-
-current_folder <- getwd()
-folders_to_file <- strsplit(current_folder, .Platform$file.sep)
-how_many_folders_deep <- length(folders_to_file[[1]])
-root_folder <- folders_to_file[[1]][how_many_folders_deep]
-
-prefixed_text <- FALSE
-if (root_folder == "02_Scripts")
-  # .. Will be added as a prefix to the path constructed at file.path below
-  prefixed_text <- TRUE
+# "AllExports.csv" and put into the "KorFormat" folder. Then, this script can be exectuted.
 
 ## Load libraries being used
 library(readr) # Reads data
 library(dplyr) # Splits data
 
-## Constructs an OS independent path to the exported Kor file
-if (prefixed_text == TRUE) {
-  kor_file_path <- file.path("..", "01_Data", "MohonkSondeData", "ExportedData.csv")
-} else {
-  kor_file_path <- file.path("01_Data", "MohonkSondeData", "ExportedData.csv")
-}
+# Adds a list of global variables into the current environment from 00_Globals.r
+# This portion of the code assumes that you are in the root of the repository
+# - Root <- This is the root of the repository
+#   - 01_Data
+#     - MHK_Data
+#       - ...
+#   - 02_Scripts
+#     - ...
+#   - 03_Graphs
+#     - ...
+#   - ...
+base::source(base::file.path("02_Scripts", "00_Globals.r"))
 
-## Ensure the file exists
-if (!file.exists(kor_file_path)) {
-  stop(paste("The file path '", kor_file_path, "' does not lead to a file.\n Did you put the exported CSV file into the KorExports folder?\n Also, did you name it ExportedData?"))
-}
+# This is the path to the exported Kor file
+kor_file_path <- KOR_UNFORMATTED_DATA_ALL
 
 ## Guess the encoding of the file so that it can be read properly by R
 # The return value is a tibble that is sorted from least probable to most probable
@@ -94,8 +78,8 @@ split_data <- exported_kor_file_data |>
 
 ## Helper function
 # Creates the name for the file when it's saved
-create_file_name <- function (date_as_string, error_appended = "") {
-  return(paste("MHK_", date_as_string, "_profile", error_appended, ".csv", sep = ""))
+create_file_name <- function (date, error_appended = "") {
+  return(paste("MHK_", date, "_profile", error_appended, ".csv", sep = ""))
 }
 
 ## Now, it's time to export all of the data in the correct format!
@@ -111,11 +95,22 @@ for (dataframe in split_data) {
   #and set data_input_error = true
   data_input_error <- FALSE
 
-  if (nrow(dataframe) == 49) {
+  # The number of rows in the current dataframe
+  dataframe_nrow <- nrow(dataframe)
+
+  if (dataframe_nrow == 49) {
+    # No error in the data
     depths_vector <- seq(from = 12, to = 0, by = -0.25)
   } else {
-    depths_vector <- rep(NA, nrow(dataframe))
     data_input_error <- TRUE
+    depths_vector <- rep(NA, nrow(dataframe))
+
+    if (dataframe_nrow > 49)
+      # Too much data
+      error_type <- "[TOO MUCH]"
+    else
+      # Too little data
+      error_type <- "[TOO LITTLE]"
   }
 
   # Create a data frame with the headings of the formatted csv
@@ -159,28 +154,27 @@ for (dataframe in split_data) {
   if (nchar(day) < 2) day <- paste("0", day, sep = "")
   if (nchar(month) < 2) month <- paste("0", month, sep = "")
 
+  # Converts the date to a string
   date_as_string <- paste(year, month, day, sep = "_")
 
-  saved_file_name <- ""
-  if (data_input_error == TRUE) {
-    saved_file_name <- create_file_name(date_as_string, "[MISTAKE FOUND]")
-  } else {
-    saved_file_name <- create_file_name(date_as_string)
-  }
-  # The location of where the file will be saved
-  file_save_path <- file.path("01_Data", "MohonkSondeData", saved_file_name)
-  
+  # Path to the current file being created
+  current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, create_file_name(date_as_string))
+
   # If the file is already there, then DO NOT overwrite it!
-  if (!file.exists(file_save_path)) {
+  if (!file.exists(current_file_to_save)) {
     # Save the data frame to a CSV file with the new file path
-    # Also, if the file has mistakes, then check to see if the file was corrected before writing the file with [MISTAKE FOUND] appended to it
-    if (data_input_error == TRUE) {
-      file_path_without_mistakes <- file.path("01_Data", "MohonkSondeData", create_file_name(date_as_string))
-      if (!file.exists(file_path_without_mistakes)) {
-        write_csv(formatted_data, file_save_path)
-      }
-    } else {
-      write_csv(formatted_data, file_save_path)
-    }
+    # If the file has mistakes, append [MISTAKE FOUND] to the file name
+    if (data_input_error == TRUE)
+      save_file_name <- create_file_name(date_as_string, error_type)
+    else
+      save_file_name <- create_file_name((date_as_string))
+
+    # Since this file has mistakes, its name will be different an therefore current_file_to_save must be overwritten
+    current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, save_file_name)
+
+    # Ensure the file with mistakes does not exist already
+    if (!file.exists(current_file_to_save))
+      readr::write_csv(formatted_data, current_file_to_save)
+
   }
 }
