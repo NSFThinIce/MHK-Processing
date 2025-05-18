@@ -39,7 +39,7 @@ MOHONK_DATA_DIR <- base::file.path(PATH_TO_DATA, "MHK_Data")
 KOR_UNFORMATTED_DATA_DIR <- base::file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
 
 # CSV Containing all of the exported data from Kor Software
-KOR_UNFORMATTED_DATA_ALL <- base::file.path(KOR_UNFORMATTED_DATA_DIR, "AllExport.csv")
+KOR_UNFORMATTED_DATA_ALL <- base::file.path(KOR_UNFORMATTED_DATA_DIR, "AllExports.csv")
 
 # Directory containing all of the formatted data from Kor Software and formatted with a script
 KOR_FORMATTED_DATA_DIR <- base::file.path(MOHONK_DATA_DIR, "EXO1Sonde", "DesiredFormat")
