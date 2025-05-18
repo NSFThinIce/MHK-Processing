@@ -2,3 +2,39 @@
 title: Error Report
 output: pdf_document
 ---
+<!-- 
+    This file is used to make it easier to find common issues that arise when collecting data with the Sonde 
+-->
+
+<!-- This chunk handles a bunch of pre-processing and won't display anything -->
+```{r}
+# Adds a list of global variables into the current environment from 00_Globals.r
+# This portion of the code assumes that you are in the root of the repository
+# - Root <- This is the root of the repository
+#   - 01_Data
+#     - MHK_Data
+#       - ...
+#   - 02_Scripts
+#     - ...
+#   - 03_Graphs
+#     - ...
+#   - ...
+base::source(base::file.path("02_Scripts", "00_Globals.r"))
+
+# Name of the file with errors
+error_file_name <- "Put name here"
+
+# Constructs an OS agnostic path to the file
+error_file_path <- base::file.path(KOR_FORMATTED_DATA_DIR, error_file_name)
+
+# Ensure the file actually exists, else stop the execution of the program
+if (!base::file.exists(error_file_path)) {
+  stop(paste("The path '", error_file_path, "'' leads to nothing"))
+}
+
+# The file with the errors in it
+error_file <- readr::read_csv(error_file_path)
+
+
+
+```
