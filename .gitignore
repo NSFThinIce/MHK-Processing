@@ -4,5 +4,4 @@
 *.Ruserdata
 .lintr
 .Rproj.user
-ExportedData.*
 *.vscode
