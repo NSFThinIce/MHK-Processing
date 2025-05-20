@@ -1,6 +1,6 @@
 # This file stores all of the globals used by other scripts
 
-# Path to the data folder if the working directory is the root of the repository
+# Path to the data directory if the working directory is the root of the repository
 # - Root <- Working directory
 #   - 01_Data
 #     - MHK_Data
@@ -12,7 +12,7 @@
 #   - ...
 PATH_TO_DATA <- base::file.path("01_Data")
 
-# Path to the data folder if the working directory is the scripts folder
+# Path to the data directory if the working directory is the scripts (or any of the other sub-directory) directory
 # - Root
 #   - 01_Data
 #     - MHK_Data
