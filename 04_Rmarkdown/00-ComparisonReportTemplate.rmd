@@ -19,7 +19,7 @@ output: pdf_document
 #   - 03_Graphs
 #     - ...
 #   - ...
-base::source(base::file.path("02_Scripts", "00_Globals.r"))
+base::source(base::file.path("..", "02_Scripts", "00_Globals.r"))
 
 # Name of the file with errors
 error_file_name <- "Put name here"
