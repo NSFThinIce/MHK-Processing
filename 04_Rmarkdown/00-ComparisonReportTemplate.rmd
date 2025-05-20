@@ -1,9 +1,9 @@
 ---
-title: Error Report
+title: Comparison Report
 output: pdf_document
 ---
 <!-- 
-    This file is used to make it easier to find common issues that arise when collecting data with the Sonde 
+    This file is used to make it easier to resolve issues of accidentally collecting too few or too much data with the Sonde
 -->
 
 <!-- This chunk handles a bunch of pre-processing and won't display anything -->
@@ -35,6 +35,12 @@ if (!base::file.exists(error_file_path)) {
 # The file with the errors in it
 error_file <- readr::read_csv(error_file_path)
 
-
-
+# Checks to see if the file has 2024 or 2025 in its name and
+# Then, chooses the correct DO sensor file to compare to
+# NOTE: Any comments on the data are stored in the original files they came from (Minnewaska_FieldDataYYYY.xlsx)
+if (base::grepl("2024", error_file_name)) {
+  do_sensor_file <- file.path(DO_SENSOR_DATA_DIR, "MHK_2024_DOSensor.xlsx")
+} else if (base::grepl("2025", error_file_name)) {
+  do_sensor_file <- file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx")
+}
 ```
