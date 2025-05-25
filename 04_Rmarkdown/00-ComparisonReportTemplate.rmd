@@ -8,8 +8,9 @@ output: pdf_document
 
 <!-- This chunk handles a bunch of pre-processing and won't display anything -->
 ```{r include=FALSE}
-# # Load libraries being used
-library("readxl")
+# Load libraries being used
+library(readxl)
+library(ggplot2)
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
