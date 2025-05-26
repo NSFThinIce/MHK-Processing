@@ -86,7 +86,7 @@ rows_to_modify <- c() #####
 # Choose rows randomly if empty
 if (length(rows_to_modify) == 0) {
   # Choose n extra rows randomly
-  rows_to_modify <- sample(1:EXPECTED_ROW_COUNT, abs(extra_or_missing_rows_count))
+  rows_to_modify <- sample(1:nrow(error_df), extra_or_missing_rows_count)
 }
 ```
 
