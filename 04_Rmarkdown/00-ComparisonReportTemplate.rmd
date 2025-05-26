@@ -14,6 +14,7 @@ library(ggplot2)
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
+# However, when knitr is used, it'll likely start a new R process who's working directory is the folder of current file
 # - Root <- This is the root of the repository
 #   - 01_Data
 #     - MHK_Data
@@ -22,8 +23,15 @@ library(ggplot2)
 #     - ...
 #   - 03_Graphs
 #     - ...
+#   - 04_Rmarkdown <- Working directory of knitr process
+#     - ...
 #   - ...
-source(file.path("..", "02_Scripts", "00_Globals.r"))
+
+if (basename(getwd()) == "04_Rmarkdown"){
+  source(file.path("..", "02_Scripts", "00_Globals.r"))
+} else {
+  source(file.path("02_Scripts", "00_Globals.r"))
+}
 
 # Name of the file with errors
 error_file_name <- "MHK_2024_11_25_profile[TOO LITTLE].csv"
