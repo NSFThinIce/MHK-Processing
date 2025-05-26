@@ -11,6 +11,7 @@ output: pdf_document
 # Load libraries being used
 library(readxl)
 library(ggplot2)
+library(tibble)
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
