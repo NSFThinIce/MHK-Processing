@@ -22,7 +22,7 @@ library(dplyr) # Splits data
 #   - 03_Graphs
 #     - ...
 #   - ...
-base::source(base::file.path("02_Scripts", "00_Globals.r"))
+source(file.path("02_Scripts", "00_Globals.r"))
 
 # This is the path to the exported Kor file
 kor_file_path <- KOR_UNFORMATTED_DATA_ALL
