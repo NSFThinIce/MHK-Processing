@@ -56,3 +56,34 @@ if (grepl("2024", error_file_name)) {
   do_sensor_df <- readxl::read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx"))
 }
 ```
+
+<!-- Begin the stuff that should be edited by the user -->
+<!-- Every line with 5 #'s should be edited if desired -->
+
+```{r include=FALSE}
+# The expected amount of rows is 49 because we go from 0 to 12 meters and count every 0.25 meters
+# This value should not change which is why it's in caps
+EXPECTED_ROW_COUNT <- 49
+
+# Stores the amount of rows in the error dataframe
+error_df_row_count <- nrow(error_df)
+
+# The amount of extra or missing rows
+extra_or_missing_rows_count <- EXPECTED_ROW_COUNT - error_df_row_count
+
+# These are the rows that are either removed or added to the error df
+# When empty, rows are chosen randomly
+rows_to_modify <- c() #####
+
+# Choose rows randomly if empty
+if (length(rows_to_modify) == 0) {
+  # Choose n extra rows randomly
+  rows_to_modify <- sample(1:EXPECTED_ROW_COUNT, abs(extra_or_missing_rows_count))
+}
+```
+
+<!-- Show the rows being modified -->
+
+```{r}
+paste0("The rows being modified are: ", paste(rows_to_modify, collapse = ", "))
+```
