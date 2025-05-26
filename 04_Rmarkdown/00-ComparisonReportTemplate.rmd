@@ -23,16 +23,16 @@ library(ggplot2)
 #   - 03_Graphs
 #     - ...
 #   - ...
-base::source(base::file.path("..", "02_Scripts", "00_Globals.r"))
+source(file.path("..", "02_Scripts", "00_Globals.r"))
 
 # Name of the file with errors
 error_file_name <- "MHK_2024_11_25_profile[TOO LITTLE].csv"
 
 # Constructs an OS agnostic path to the file
-error_file_path <- base::file.path(KOR_FORMATTED_DATA_DIR, error_file_name)
+error_file_path <- file.path(KOR_FORMATTED_DATA_DIR, error_file_name)
 
 # Ensure the file actually exists, else stop the execution of the program
-if (!base::file.exists(error_file_path)) {
+if (!file.exists(error_file_path)) {
   stop(paste("The path '", error_file_path, "'' leads to nothing"))
 }
 
@@ -42,9 +42,9 @@ error_df <- readr::read_csv(error_file_path)
 # Checks to see if the file has 2024 or 2025 in its name and
 # Then, chooses the correct DO sensor file to compare to
 # NOTE: Any comments on the data are stored in the original files they came from (Minnewaska_FieldDataYYYY.xlsx)
-if (base::grepl("2024", error_file_name)) {
+if (grepl("2024", error_file_name)) {
   do_sensor_df <- readxl::read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2024_DOSensor.xlsx"))
-} else if (base::grepl("2025", error_file_name)) {
+} else if (grepl("2025", error_file_name)) {
   do_sensor_df <- readxl::read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx"))
 }
 ```
