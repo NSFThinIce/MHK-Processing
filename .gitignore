@@ -5,3 +5,4 @@
 .lintr
 .Rproj.user
 *.vscode
+04_Rmarkdown/*.pdf
