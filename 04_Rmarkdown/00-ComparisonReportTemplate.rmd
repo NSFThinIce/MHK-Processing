@@ -95,3 +95,19 @@ if (length(rows_to_modify) == 0) {
 ```{r}
 paste0("The rows being modified are: ", paste(rows_to_modify, collapse = ", "))
 ```
+
+<!-- Remove or Add the rows -->
+
+```{r include=FALSE}
+if (is_missing) {
+  # If missing, add rows of NA at specified positions
+  for (i in rows_to_modify) {
+    # Added tibble:: to tell the interpreter that we're using the tibble library and not the dplyr library
+    error_df <- tibble::add_row(error_df, .before = i)
+  }
+} else if (is_extra) {
+  # If extra, delete rows from the rows_to_modify vector
+  error_df <- error_df[-rows_to_modify, ]
+}
+```
+
