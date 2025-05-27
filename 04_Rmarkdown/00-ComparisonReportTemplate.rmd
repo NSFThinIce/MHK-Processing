@@ -58,7 +58,11 @@ if (grepl("2024", error_file_name)) {
 }
 
 # We only care about the data with the exact same date as the data in the error_df
-error_df_date <- error_df$Date[1]
+# The date is converted to a date object so that it always follows the %m/%d/%Y format
+error_df_date <- format(
+  as.Date(error_df$Date[1], format = "%m/%d/%Y"),
+  "%m/%d/%Y"
+)
 
 # Convert all of the dates in the do_sensor_df into strings
 do_sensor_df$collect_date <- format(do_sensor_df$collect_date, "%m/%d/%Y")
