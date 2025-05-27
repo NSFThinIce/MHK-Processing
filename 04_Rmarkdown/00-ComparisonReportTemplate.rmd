@@ -97,7 +97,19 @@ if (length(rows_to_modify) == 0) {
 }
 ```
 
+<!-- The raw data -->
+# The Dataframe with Errors
+```{r}
+error_df
+```
+
+# The Dataframe from the DO Sensor
+```{r}
+do_sensor_df
+```
+
 <!-- Show the rows being modified -->
+## The modifications made
 
 ```{r}
 # The row(s) being modified are:
