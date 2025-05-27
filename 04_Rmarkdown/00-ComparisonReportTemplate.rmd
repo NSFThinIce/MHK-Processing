@@ -10,7 +10,6 @@ output: pdf_document
 ```{r include=FALSE}
 # Load libraries being used
 library(readxl)
-library(ggplot2)
 library(tibble)
 library(dplyr)
 
@@ -118,3 +117,62 @@ if (is_missing) {
 }
 ```
 
+<!-- Draw the graphs -->
+
+```{r}
+# Depths vs Temperature Graph
+
+depth_sonde <- seq(0, 12, 0.25)
+temp_sonde <- error_df$temp_degC
+
+temp_do_sensor <- do_sensor_df$Temp_C_DOProbe
+# Not every dataset from the DO sensor ends at 12m, so that must be reflected here
+depth_do_sensor <- 0:max(do_sensor_df$Depth_m)
+
+# Start the creation of the plot
+# The max and min points for each graph
+max_depth <- max(depth_sonde, depth_do_sensor, na.rm = TRUE)
+min_depth <- min(depth_sonde, depth_do_sensor, na.rm = TRUE)
+max_temp <- max(temp_sonde, temp_do_sensor, na.rm = TRUE)
+min_temp <- min(temp_sonde, temp_do_sensor, na.rm = TRUE)
+
+# Draw the empty plot
+plot(
+  c(min_temp, max_temp),
+  c(min_depth, max_depth),
+  type = "n",
+  xlab = "Temperature (°C)", ylab = "Depth (m)",
+  main = "Depth (m) vs Temperature (°C)",
+  xlim = c(max_temp, min_temp), # Invert the x-axis
+  ylim = c(12, 0), # Invert the y-axis
+  axes = FALSE # Don't draw the axes since we already draw them
+)
+
+# Draw the axes
+# x-axis
+axis(1, at = seq(min_temp, max_temp, 0.5))
+
+# y-axis
+axis(2, at = 12:0)
+
+# Add the first graph
+points(temp_sonde, depth_sonde, col = "red")
+
+# Connect the points with lines
+lines(temp_sonde, depth_sonde, col = "red")
+
+# And draw the 2nd graph
+# Start with the points
+points(temp_do_sensor, depth_do_sensor, col = "blue")
+
+# Then, connect them with lines
+lines(temp_do_sensor, depth_do_sensor, col = "blue")
+
+# Add a legend to the graph
+legend(
+  "bottomleft",
+  inset = 0.05,
+  legend = c("Sonde", "DO Sensor"),
+  fill = c("red", "blue")
+)
+```
