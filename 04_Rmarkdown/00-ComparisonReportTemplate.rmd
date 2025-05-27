@@ -53,9 +53,9 @@ error_df <- readr::read_csv(error_file_path)
 # Then, chooses the correct DO sensor file to compare to
 # NOTE: Any comments on the data are stored in the original files they came from (Minnewaska_FieldDataYYYY.xlsx)
 if (grepl("2024", error_file_name)) {
-  do_sensor_df <- readxl::read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2024_DOSensor.xlsx"))
+  do_sensor_df <- read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2024_DOSensor.xlsx"))
 } else if (grepl("2025", error_file_name)) {
-  do_sensor_df <- readxl::read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx"))
+  do_sensor_df <- read_excel(file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx"))
 }
 ```
 
