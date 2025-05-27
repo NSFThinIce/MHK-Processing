@@ -57,6 +57,15 @@ if (grepl("2024", error_file_name)) {
 } else if (grepl("2025", error_file_name)) {
   do_sensor_df <- read_xlsx(file.path(DO_SENSOR_DATA_DIR, "MHK_2025_DOSensor.xlsx"))
 }
+
+# We only care about the data with the exact same date as the data in the error_df
+error_df_date <- error_df$Date[1]
+
+# Convert all of the dates in the do_sensor_df into strings
+do_sensor_df$collect_date <- format(do_sensor_df$collect_date, "%m/%d/%Y")
+
+# Added dplyr:: to tell the interpreter we're using dplyr::filter instead of stats::filter
+do_sensor_df <- dplyr::filter(do_sensor_df, collect_date == error_df_date)
 ```
 
 <!-- Begin the stuff that should be edited by the user -->
