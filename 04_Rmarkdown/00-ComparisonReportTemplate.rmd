@@ -72,15 +72,12 @@ do_sensor_df <- dplyr::filter(do_sensor_df, collect_date == error_df_date)
 <!-- Every line with 5 #'s should be edited if desired -->
 
 ```{r include=FALSE}
-# The expected amount of rows is 49 because we go from 0 to 12 meters and count every 0.25 meters
-# This value should not change which is why it's in caps
-EXPECTED_ROW_COUNT <- 49
-
 # Stores the amount of rows in the error dataframe
 error_df_row_count <- nrow(error_df)
 
+# The expected amount of rows is 49 because we go from 0 to 12 meters and count every 0.25 meters
 # The amount of extra or missing rows
-extra_or_missing_rows_count <- EXPECTED_ROW_COUNT - error_df_row_count
+extra_or_missing_rows_count <- 49 - error_df_row_count
 
 is_extra <- extra_or_missing_rows_count < 0
 is_missing <- extra_or_missing_rows_count > 0
