@@ -99,7 +99,7 @@ if (length(rows_to_modify) == 0) {
 <!-- Show the rows being modified -->
 
 ```{r}
-paste0("The rows being modified are: ", paste(rows_to_modify, collapse = ", "))
+paste0("The row(s) being modified are: ", paste(rows_to_modify, collapse = ", "))
 ```
 
 <!-- Remove or Add the rows -->
@@ -119,6 +119,7 @@ if (is_missing) {
 
 <!-- Draw the graphs -->
 
+# Draw Depth (m) vs Temperature (°C)
 ```{r}
 # Depths vs Temperature Graph
 
@@ -167,6 +168,61 @@ points(temp_do_sensor, depth_do_sensor, col = "blue")
 
 # Then, connect them with lines
 lines(temp_do_sensor, depth_do_sensor, col = "blue")
+
+# Add a legend to the graph
+legend(
+  "bottomleft",
+  inset = 0.05,
+  legend = c("Sonde", "DO Sensor"),
+  fill = c("red", "blue")
+)
+```
+
+
+# Draw Depth (m) vs DO Saturation (%)
+```{r}
+# Depths vs DO Saturation Graph
+
+do_sat_sonde <- error_df$doSaturation_percent
+
+do_sat_do_sensor <- do_sensor_df$DO_Sat_Percent
+
+# Start the creation of the plot
+# The max and min points for each graph
+max_do_sat <- max(do_sat_sonde, do_sat_do_sensor, na.rm = TRUE)
+min_do_sat <- min(do_sat_sonde, do_sat_do_sensor, na.rm = TRUE)
+
+# Draw the empty plot
+plot(
+  c(min_do_sat, max_do_sat),
+  c(min_depth, max_depth),
+  type = "n",
+  xlab = "DO Saturation (%)", ylab = "Depth (m)",
+  main = "Depth (m) vs DO Saturation (%)",
+  xlim = c(max_do_sat, min_do_sat), # Invert the x-axis
+  ylim = c(12, 0), # Invert the y-axis
+  axes = FALSE # Don't draw the axes since we already draw them
+)
+
+# Draw the axes
+# x-axis
+axis(1, at = seq(min_do_sat, max_do_sat))
+
+# y-axis
+axis(2, at = 12:0)
+
+# Add the first graph
+points(do_sat_sonde, depth_sonde, col = "red")
+
+# Connect the points with lines
+lines(do_sat_sonde, depth_sonde, col = "red")
+
+# And draw the 2nd graph
+# Start with the points
+points(do_sat_do_sensor, depth_do_sensor, col = "blue")
+
+# Then, connect them with lines
+lines(do_sat_do_sensor, depth_do_sensor, col = "blue")
 
 # Add a legend to the graph
 legend(
