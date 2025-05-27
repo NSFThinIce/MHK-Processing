@@ -7,6 +7,8 @@ output: pdf_document
 -->
 
 <!-- This chunk handles a bunch of pre-processing and won't display anything -->
+<!-- Every line with 5 #'s should be edited if desired -->
+
 ```{r include=FALSE}
 # Load libraries being used
 library(readxl)
@@ -28,14 +30,14 @@ library(dplyr)
 #     - ...
 #   - ...
 
-if (basename(getwd()) == "04_Rmarkdown"){
+if (basename(getwd()) == "04_Rmarkdown") {
   source(file.path("..", "02_Scripts", "00_Globals.r"))
 } else {
   source(file.path("02_Scripts", "00_Globals.r"))
 }
 
 # Name of the file with errors
-error_file_name <- paste0("Name of file here", ".csv")
+error_file_name <- paste0("Name of file here", ".csv") ##### <- EDIT
 
 # Constructs an OS agnostic path to the file
 error_file_path <- file.path(KOR_FORMATTED_DATA_DIR, error_file_name)
@@ -69,12 +71,7 @@ do_sensor_df$collect_date <- format(do_sensor_df$collect_date, "%m/%d/%Y")
 
 # Added dplyr:: to tell the interpreter we're using dplyr::filter instead of stats::filter
 do_sensor_df <- dplyr::filter(do_sensor_df, collect_date == error_df_date)
-```
 
-<!-- Begin the stuff that should be edited by the user -->
-<!-- Every line with 5 #'s should be edited if desired -->
-
-```{r include=FALSE}
 # Stores the amount of rows in the error dataframe
 error_df_row_count <- nrow(error_df)
 
@@ -91,7 +88,7 @@ extra_or_missing_rows_count <- abs(extra_or_missing_rows_count)
 
 # These are the rows that are either removed or added to the error df
 # When empty, rows are chosen randomly
-rows_to_modify <- c() #####
+rows_to_modify <- c() ##### <- EDIT
 
 # Choose rows randomly if empty
 if (length(rows_to_modify) == 0) {
