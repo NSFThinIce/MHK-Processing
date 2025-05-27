@@ -171,7 +171,7 @@ plot(
 
 # Draw the axes
 # x-axis
-axis(1, at = seq(min_temp, max_temp, 0.5))
+axis(1, at = min_temp:max_temp)
 
 # y-axis
 axis(2, at = 12:0)
@@ -226,7 +226,7 @@ plot(
 
 # Draw the axes
 # x-axis
-axis(1, at = seq(min_do_sat, max_do_sat))
+axis(1, at = seq(min_do_sat, max_do_sat, (max_do_sat - min_do_sat) / 12))
 
 # y-axis
 axis(2, at = 12:0)
@@ -246,7 +246,7 @@ lines(do_sat_do_sensor, depth_do_sensor, col = "blue")
 
 # Add a legend to the graph
 legend(
-  "bottomleft",
+  "topright",
   inset = 0.05,
   legend = c("Sonde", "DO Sensor"),
   fill = c("red", "blue")
