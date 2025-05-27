@@ -103,7 +103,14 @@ if (length(rows_to_modify) == 0) {
 <!-- Show the rows being modified -->
 
 ```{r}
-paste0("The row(s) being modified are: ", paste(rows_to_modify, collapse = ", "))
+# The row(s) being modified are:
+paste(rows_to_modify, collapse = ", ")
+
+# Are there missing points?
+is_missing
+
+# Are there extra points?
+is_extra
 ```
 
 <!-- Remove or Add the rows -->
