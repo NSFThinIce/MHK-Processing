@@ -86,9 +86,12 @@ is_missing <- extra_or_missing_rows_count > 0
 # then the count should still be positive as it'll be a count for how many extra rows are there
 extra_or_missing_rows_count <- abs(extra_or_missing_rows_count)
 
+# These are the depths being modified
+# When empty, depths are chose randomly
+depth_to_modify <- c() ##### <- EDIT
+
 # These are the rows that are either removed or added to the error df
-# When empty, rows are chosen randomly
-rows_to_modify <- c() ##### <- EDIT
+rows_to_modify <- (depth_to_modify * 4) + 1
 
 # Choose rows randomly if empty
 if (length(rows_to_modify) == 0) {
