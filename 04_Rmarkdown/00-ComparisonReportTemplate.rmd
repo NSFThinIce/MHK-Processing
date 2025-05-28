@@ -95,6 +95,9 @@ if (length(rows_to_modify) == 0) {
   # Choose n extra rows randomly
   rows_to_modify <- sample(1:nrow(error_df), extra_or_missing_rows_count)
 }
+
+# The rows being modified are converted to depths to make it more useful for finding potential errors
+rows_to_modify_as_depths <- paste0((rows_to_modify - 1) / 4, "m")
 ```
 
 <!-- The raw data -->
@@ -113,7 +116,7 @@ do_sensor_df
 
 ```{r}
 # The depths being modified are:
-paste(paste0((rows_to_modify - 1) / 4, "m"), collapse = ", ")
+paste(rows_to_modify_as_depths, collapse = ", ")
 
 # Are there missing points?
 is_missing
