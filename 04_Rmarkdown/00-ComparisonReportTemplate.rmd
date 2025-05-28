@@ -264,3 +264,33 @@ legend(
   fill = c("red", "blue")
 )
 ```
+
+
+<!-- Lastly, save the modified error_df -->
+
+```{r include=FALSE}
+# Add the depths to the error dataframe (error_df)
+error_df$Depth_m <- depth_sonde
+
+# Ensure the file is saved in the Rmarkdown directory
+current_direcory <- basename(getwd())
+
+if (current_direcory == "04_Rmarkdown") {
+  write.csv(error_df, error_file_name)
+} else { # Assume we're in the root directory, if we're not in the Rmarkdown folder
+  # Just in case, ensure we're in the right folder
+  path_to_rmarkdown_dir <- file.path(".", "04_Rmarkdown")
+
+  if (dir.exists(path_to_rmarkdown_dir)) {
+    write.csv(error_df, file.path(path_to_rmarkdown_dir, error_file_name))
+  } else {
+    stop(
+      paste0(
+        "The directory '",
+        getwd(),
+        "'' is not the root directory of the repository. Check the top of this script for further information"
+      )
+    )
+  }
+}
+```
