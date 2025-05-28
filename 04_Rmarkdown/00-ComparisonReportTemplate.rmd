@@ -112,8 +112,8 @@ do_sensor_df
 ## The modifications made
 
 ```{r}
-# The row(s) being modified are:
-paste(rows_to_modify, collapse = ", ")
+# The depths being modified are:
+paste(paste0((rows_to_modify - 1) / 4, "m"), collapse = ", ")
 
 # Are there missing points?
 is_missing
