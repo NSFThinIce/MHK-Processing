@@ -192,6 +192,9 @@ points(temp_do_sensor, depth_do_sensor, col = "blue")
 # Then, connect them with lines
 lines(temp_do_sensor, depth_do_sensor, col = "blue")
 
+# Draw horizontal lines showing which depth was modified
+abline(h = (rows_to_modify - 1) / 4, col = "green")
+
 # Add a legend to the graph
 legend(
   "bottomleft",
@@ -246,6 +249,9 @@ points(do_sat_do_sensor, depth_do_sensor, col = "blue")
 
 # Then, connect them with lines
 lines(do_sat_do_sensor, depth_do_sensor, col = "blue")
+
+# Draw horizontal lines showing which depth was modified
+abline(h = (rows_to_modify - 1) / 4, col = "green")
 
 # Add a legend to the graph
 legend(
