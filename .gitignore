@@ -6,3 +6,4 @@
 .Rproj.user
 *.vscode
 04_Rmarkdown/*.pdf
+04_Rmarkdown/*.csv
