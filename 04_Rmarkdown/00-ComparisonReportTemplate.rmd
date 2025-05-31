@@ -262,6 +262,9 @@ legend(
 <!-- Lastly, save the modified error_df, unmodified error_df_raw, and the portion of the do_sensor_df that was used -->
 
 ```{r include=FALSE}
+# The error file's name without the [] and the content inside them
+new_file_name <- sub("\\[.+\\]", "", error_file_name)
+
 # Add the depths to the error dataframe (error_df)
 error_df$Depth_m <- depth_sonde
 
@@ -270,7 +273,7 @@ current_direcory <- basename(getwd())
 
 if (current_direcory == "04_Rmarkdown") {
   # Write all of the data in the 04_Rmarkdown directory
-  write_csv(error_df, error_file_name)
+  write_csv(error_df, new_file_name)
   write_csv(error_df_raw, "Sonde_Raw.csv")
   write_csv(do_sensor_df, "DO.csv")
 } else { # Assume we're in the root directory, if we're not in the Rmarkdown folder
@@ -279,7 +282,7 @@ if (current_direcory == "04_Rmarkdown") {
 
   if (dir.exists(path_to_rmarkdown_dir)) {
     # Write all of the files in the 04_Rmarkdown directory
-    write_csv(error_df, file.path(path_to_rmarkdown_dir, error_file_name))
+    write_csv(error_df, file.path(path_to_rmarkdown_dir, new_file_name))
     write_csv(error_df_raw, file.path(path_to_rmarkdown_dir, "Sonde_Raw.csv"))
     write_csv(do_sensor_df, file.path(path_to_rmarkdown_dir, "DO.csv"))
   } else {
