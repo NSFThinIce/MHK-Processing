@@ -170,10 +170,10 @@ plot(
 
 # Draw the axes
 # x-axis
-axis(1, at = min_temp:max_temp)
+axis(1, at = seq(min_temp, max_temp, (max_temp - min_temp) / 12))
 
 # y-axis
-axis(2, at = 12:0)
+axis(2, at = 0:12)
 
 # Add the first graph
 points(temp_sonde, depth_sonde, col = "red")
@@ -231,7 +231,7 @@ plot(
 axis(1, at = seq(min_do_sat, max_do_sat, (max_do_sat - min_do_sat) / 12))
 
 # y-axis
-axis(2, at = 12:0)
+axis(2, at = 0:12)
 
 # Add the first graph
 points(do_sat_sonde, depth_sonde, col = "red")
