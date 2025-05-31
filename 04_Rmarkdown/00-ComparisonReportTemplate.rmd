@@ -146,8 +146,8 @@ depth_sonde <- seq(0, 12, 0.25)
 temp_sonde <- error_df$temp_degC
 
 temp_do_sensor <- do_sensor_df$Temp_C_DOProbe
-# Not every dataset from the DO sensor ends at 12m, so that must be reflected here
-depth_do_sensor <- 0:max(do_sensor_df$Depth_m)
+
+depth_do_sensor <- do_sensor_df$Depth_m
 
 # Start the creation of the plot
 # The max and min points for each graph
