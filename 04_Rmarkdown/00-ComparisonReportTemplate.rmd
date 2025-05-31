@@ -14,6 +14,7 @@ output: pdf_document
 library(readxl)
 library(tibble)
 library(dplyr)
+library(readr)
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
@@ -48,7 +49,10 @@ if (!file.exists(error_file_path)) {
 }
 
 # The file with the errors in it is loaded as a dataframe
-error_df <- readr::read_csv(error_file_path)
+error_df_raw <- read_csv(error_file_path)
+
+# This allows the script to save the raw file seperately
+error_df <- error_df_raw
 
 # Checks to see if the file has 2024 or 2025 in its name and
 # Then, chooses the correct DO sensor file to compare to
