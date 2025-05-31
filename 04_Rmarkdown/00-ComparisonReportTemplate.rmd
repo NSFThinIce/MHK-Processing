@@ -101,6 +101,15 @@ rows_to_modify <- (depth_to_modify * 4) + 1
 if (length(rows_to_modify) == 0) {
   # Choose n extra rows randomly
   rows_to_modify <- sample(1:nrow(error_df), extra_or_missing_rows_count)
+} else if (length(rows_to_modify) < extra_or_missing_rows_count) {
+  # Then, add the other rows that should be removed
+  # But! Make sure to not add rows that are going to be removed already
+  possible_rows_to_modify <- (1:nrow(error_df))[-rows_to_modify]
+
+  rows_to_modify <- c(
+    rows_to_modify,
+    sample(possible_rows_to_modify, extra_or_missing_rows_count - length(rows_to_modify))
+  )
 }
 
 # The rows being modified are converted to depths to make it more useful for finding potential errors
