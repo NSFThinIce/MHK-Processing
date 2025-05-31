@@ -103,17 +103,6 @@ if (length(rows_to_modify) == 0) {
 rows_to_modify_as_depths <- paste0((rows_to_modify - 1) / 4, "m")
 ```
 
-<!-- The raw data -->
-# The Dataframe with Errors
-```{r}
-error_df
-```
-
-# The Dataframe from the DO Sensor
-```{r}
-do_sensor_df
-```
-
 <!-- Show the rows being modified -->
 ## The modifications made
 
