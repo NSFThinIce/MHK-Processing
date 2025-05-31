@@ -38,7 +38,7 @@ if (basename(getwd()) == "04_Rmarkdown") {
 }
 
 # Name of the file with errors
-error_file_name <- paste0("Name of file here", ".csv") ##### <- EDIT
+error_file_name <- "Name of file here" ##### <- EDIT
 
 # Constructs an OS agnostic path to the file
 error_file_path <- file.path(KOR_FORMATTED_DATA_DIR, error_file_name)
