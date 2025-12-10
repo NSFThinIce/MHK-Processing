@@ -21,15 +21,46 @@ library(dplyr) # Splits data
 #   - 03_Graphs
 #     - ...
 #   - ...
-source(file.path("02_Scripts", "00_Globals.r"))
+PATH_TO_DATA <- file.path("01_Data")
+
+# Path to the data directory if the working directory is the scripts (or any of the other sub-directory) directory
+# - Root
+#   - 01_Data
+#     - MHK_Data
+#       - ...
+#   - 02_Scripts <- Working directory
+#     - ...
+#   - 03_Graphs
+#     - ...
+#   - ...
+if (!dir.exists(PATH_TO_DATA)) {
+  PATH_TO_DATA <- file.path("..", "01_Data")
+}
+
+# If the directory fails to exist in both cases, then stop the program because
+# the program is not running in a supported working directory
+if (!dir.exists(PATH_TO_DATA)) {
+  stop(paste("This script is being run from ", getwd(), " which is not supported"))
+}
+
+# Directory that holds all of the data pertaining to Mohonk
+MOHONK_DATA_DIR <- file.path(PATH_TO_DATA, "MHK_Data")
+
+# Directory containing unformatted data exported from Kor Software
+KOR_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
+
+# CSV Containing all of the exported data from Kor Software
+KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, "KorExport_2024_06_05_to_2025_05_07.csv")
 
 # This is the path to the exported Kor file
 kor_file_path <- KOR_UNFORMATTED_DATA_ALL
+
 
 ## Guess the encoding of the file so that it can be read properly by R
 # The return value is a tibble that is sorted from least probable to most probable
 # This code assumes that the encoding with the highest probability is the correct one
 possible_encoding <- as.character(guess_encoding(kor_file_path)[1, 1])
+
 
 ## R fails to read files encoded in ASCII for some reason; however, there's a solution!
 # Because UTF-8 is a superset of ASCII, all ASCII characters are UTF-8 characters!
@@ -113,21 +144,21 @@ for (dataframe in split_data) {
   }
   
   # Create a data frame with the headings of the formatted csv
-  formatted_data <- data.frame(
-    lakeID = rep("MHK", nrow(dataframe)),
-    Date = dataframe$X2,
-    Time = dataframe$X1,
-    Depth_m = depths_vector,
-    temp_degC = dataframe$X24,
-    doConcentration_mgpL = dataframe$X15,
-    doSaturation_percent = dataframe$X14,
-    chlorophyll_RFU = dataframe$X8,
-    phycocyaninBGA_RFU_14C102008 = dataframe$X6,
-    turbidity_Fnu = rep(NA, nrow(dataframe)),
-    pH = dataframe$X20,
-    orp_MV = rep(NA, nrow(dataframe)),
-    specificConductivity_uSpcm = dataframe$X10,
-    salinity_psu = dataframe$X12,
+  formatted_data <- dataframe %>% data.frame(
+    lakeID = rep("MHK", nrow(dataframe)), 
+    Depth_m = depths_vector, 
+    turbidity_Fnu = rep(NA, nrow(dataframe)), 
+    orp_MV = rep(NA, nrow(dataframe)),)
+    rename(Date = starts_with("DATE"), 
+           Time = starts_with("TIME"),
+           temp_degC = starts_with("TEMP"),
+           doConcentration_mgpL = starts_with("DO (MG/L)"),
+           doSaturation_percent = starts_with("DO (% SAT)"),
+           chlorophyll_RFU = starts_with("CHLOROPHYLL (RFU)"),
+           phycocyaninBGA_RFU_14C102008 = starts_with("PHYCOCYANIN (RFU)"),
+           pH = starts_with("pH"),
+           specificConductivity_uSpcm = starts_with("SP COND (µS/CM)") ,
+           salinity_psu = starts_with("SAL (PSU)"),
     tds_mgpL = dataframe$X11,
     waterPressure_barA = rep(NA, nrow(dataframe)),
     latitude = dataframe$X17,
