@@ -144,7 +144,7 @@ for (dataframe in split_data) {
   }
   
   # Create a data frame with the headings of the formatted csv
-  formatted_data <- dataframe %>% data.frame(
+  formatted_data <- data.frame %>% data.frame(
     lakeID = rep("MHK", nrow(dataframe)), 
     Depth_m = depths_vector, 
     turbidity_Fnu = rep(NA, nrow(dataframe)), 
