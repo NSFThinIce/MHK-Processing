@@ -50,7 +50,7 @@ MOHONK_DATA_DIR <- file.path(PATH_TO_DATA, "MHK_Data")
 KOR_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
 
 # CSV Containing all of the exported data from Kor Software
-KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, "KorExport_2024_06_05_to_2025_05_07.csv")
+KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, "KorExport_2025_05_07_to_2025_12_03.csv")
 
 # Directory containing all of the formatted data from Kor Software and formatted with a script
 KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format")
@@ -121,29 +121,6 @@ create_file_name <- function (date, error_appended = "") {
 for (data.index in 1:length(split_data)) {
   temp.df <- split_data[[data.index]]
 
-  #if there are 49 rows in the table then make a vector from 12 - 0 with step -.25
-  #else fill the vector with NA with the vector being how many rows are in tab
-  #and set data_input_error = true
-  data_input_error <- FALSE
-  
-  # The number of rows in the current dataframe
-  dataframe_nrow <- nrow(temp.df)
-  
-  if (dataframe_nrow == 49) {
-    # No error in the data
-    depths_vector <- seq(from = 12, to = 0, by = -0.25)
-  } else {
-    data_input_error <- TRUE
-    depths_vector <- rep(NA, nrow(temp.df))
-    
-    if (dataframe_nrow > 49)
-      # Too much data
-      error_type <- "[TOO MUCH]"
-    else
-      # Too little data
-      error_type <- "[TOO LITTLE]"
-  }
-  
   # Create a data frame with the headings of the formatted csv
   formatted_data <- temp.df %>% 
     select(
@@ -161,7 +138,7 @@ for (data.index in 1:length(split_data)) {
       barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
     mutate(
       lakeID = "MHK",
-      Depth_m = depths_vector,
+      Depth_m = seq(0, by = 0.25, length.out = n()),
       turbidity_Fnu = NA,
       orp_MV = NA,
       waterPressure_barA = NA,
@@ -171,7 +148,7 @@ for (data.index in 1:length(split_data)) {
       altitude_m = 379 )
   
   #flips the rows of the dataframe
-  formatted_data <- formatted_data[nrow(formatted_data):1, ]
+  #formatted_data <- formatted_data[nrow(formatted_data):1, ]
   
   # Format the date to be file name friendly
   date <- temp.df$DATE[1]
