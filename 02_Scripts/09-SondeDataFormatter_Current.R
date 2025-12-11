@@ -52,6 +52,9 @@ KOR_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
 # CSV Containing all of the exported data from Kor Software
 KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, "KorExport_2024_06_05_to_2025_05_07.csv")
 
+# Directory containing all of the formatted data from Kor Software and formatted with a script
+KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format")
+
 # This is the path to the exported Kor file
 kor_file_path <- KOR_UNFORMATTED_DATA_ALL
 
@@ -114,26 +117,24 @@ create_file_name <- function (date, error_appended = "") {
 
 ## Now, it's time to export all of the data in the correct format!
 # for each dataframe in the split_data dataframe, do
-for (dataframe in split_data) {
-  ## Overwrite the dataframe's column names for convenience 
-  # (The names are X1 to XN where N is the number of columns. This was used before these two scripts 
-  # were combined. idk why it was done this way but I don't see any issues with it as of now)
-  colnames(dataframe) <- paste("X", 1:ncol(dataframe), sep = "")
-  
+##data.index <- 1
+for (data.index in 1:length(split_data)) {
+  temp.df <- split_data[[data.index]]
+
   #if there are 49 rows in the table then make a vector from 12 - 0 with step -.25
   #else fill the vector with NA with the vector being how many rows are in tab
   #and set data_input_error = true
   data_input_error <- FALSE
   
   # The number of rows in the current dataframe
-  dataframe_nrow <- nrow(dataframe)
+  dataframe_nrow <- nrow(temp.df)
   
   if (dataframe_nrow == 49) {
     # No error in the data
     depths_vector <- seq(from = 12, to = 0, by = -0.25)
   } else {
     data_input_error <- TRUE
-    depths_vector <- rep(NA, nrow(dataframe))
+    depths_vector <- rep(NA, nrow(temp.df))
     
     if (dataframe_nrow > 49)
       # Too much data
@@ -144,34 +145,36 @@ for (dataframe in split_data) {
   }
   
   # Create a data frame with the headings of the formatted csv
-  formatted_data <- data.frame %>% data.frame(
-    lakeID = rep("MHK", nrow(dataframe)), 
-    Depth_m = depths_vector, 
-    turbidity_Fnu = rep(NA, nrow(dataframe)), 
-    orp_MV = rep(NA, nrow(dataframe)),)
-    rename(Date = starts_with("DATE"), 
-           Time = starts_with("TIME"),
-           temp_degC = starts_with("TEMP"),
-           doConcentration_mgpL = starts_with("DO (MG/L)"),
-           doSaturation_percent = starts_with("DO (% SAT)"),
-           chlorophyll_RFU = starts_with("CHLOROPHYLL (RFU)"),
-           phycocyaninBGA_RFU_14C102008 = starts_with("PHYCOCYANIN (RFU)"),
-           pH = starts_with("pH"),
-           specificConductivity_uSpcm = starts_with("SP COND (µS/CM)") ,
-           salinity_psu = starts_with("SAL (PSU)"),
-    tds_mgpL = dataframe$X11,
-    waterPressure_barA = rep(NA, nrow(dataframe)),
-    latitude = dataframe$X17,
-    longitude = dataframe$X18,
-    altitude_m = dataframe$X19,
-    barometerAirHandheld_mbars = dataframe$X7
-  )
+  formatted_data <- temp.df %>% 
+    select(
+      Date  = starts_with("DATE"),
+      Time  = starts_with("TIME"),
+      temp_degC  = starts_with("TEMP"),
+      doConcentration_mgpL = starts_with("DO (MG"),
+      doSaturation_percent = starts_with("DO (% SAT"),
+      chlorophyll_RFU = starts_with("CHLOROPHYLL"),
+      phycocyaninBGA_RFU_14C102008  = starts_with("PHYCOCYANIN"),
+      pH  = starts_with("pH-"),
+      specificConductivity_uSpcm = starts_with("SP COND"),
+      salinity_psu = starts_with("SAL (PSU"),
+      tds_mgpL = starts_with("TDS"),
+      barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
+    mutate(
+      lakeID = "MHK",
+      Depth_m = depths_vector,
+      turbidity_Fnu = NA,
+      orp_MV = NA,
+      waterPressure_barA = NA,
+    ###lat, long, and alt from Oleksy et al. 2024
+      latitude = 41.766,
+      longitude = '−74.158',
+      altitude_m = 379 )
   
   #flips the rows of the dataframe
   formatted_data <- formatted_data[nrow(formatted_data):1, ]
   
   # Format the date to be file name friendly
-  date <- dataframe$X2[1]
+  date <- temp.df$DATE[1]
   date_as_string <- sub("(\\d+)/(\\d+)/(\\d{4})$", "\\3/\\1/\\2", as.character(date))
   
   ## If there are no leading zeros for the month or day, then append a 0 to the string
