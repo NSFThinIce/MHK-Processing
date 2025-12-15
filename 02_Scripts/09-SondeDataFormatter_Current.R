@@ -10,6 +10,9 @@
 library(readr) # Reads data
 library(dplyr) # Splits data
 
+#Which KOr export file are you working with - change it here####
+kor_export_file<-"KorExport_2025_05_07_to_2025_12_03.csv"
+
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
 # - Root <- This is the root of the repository
@@ -50,7 +53,7 @@ MOHONK_DATA_DIR <- file.path(PATH_TO_DATA, "MHK_Data")
 KOR_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
 
 # CSV Containing all of the exported data from Kor Software
-KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, "KorExport_2025_05_07_to_2025_12_03.csv")
+KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, kor_export_file)
 
 # Directory containing all of the formatted data from Kor Software and formatted with a script
 KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format")
@@ -119,8 +122,14 @@ create_file_name <- function (date, error_appended = "") {
 # for each dataframe in the split_data dataframe, do
 ##data.index <- 1
 for (data.index in 1:length(split_data)) {
+  #Split out the single data frame####
   temp.df <- split_data[[data.index]]
 
+  #Get the number of rows for the profile
+  numberOfRows<-nrow(temp.df)
+  #Generate a backwards depth vector
+  depth_vector<-seq(nrow(temp.df)*0.25-0.25,0,by=-0.25)
+  
   # Create a data frame with the headings of the formatted csv
   formatted_data <- temp.df %>% 
     select(
@@ -138,7 +147,7 @@ for (data.index in 1:length(split_data)) {
       barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
     mutate(
       lakeID = "MHK",
-      Depth_m = seq(0, by = 0.25, length.out = n()),
+      Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
       waterPressure_barA = NA,
