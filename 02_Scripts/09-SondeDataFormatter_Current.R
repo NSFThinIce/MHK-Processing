@@ -100,6 +100,7 @@ if (possible_encoding == "ASCII") {
   possible_encoding <- "UTF-8"
 }
 
+
 ## Read the data from the modified (or not modified) Kor file
 # Because it's a CSV file the delimiter is ","
 exported_kor_file_data <- read_delim(kor_file_path, delim = ",", locale = locale(encoding = possible_encoding))
@@ -108,14 +109,14 @@ exported_kor_file_data <- read_delim(kor_file_path, delim = ",", locale = locale
 # Using group_by, each element can be grouped according to its date
 # Then, using group_split each group will be put into a separate tibble and then they all are stored in a list
 split_data <- exported_kor_file_data |> 
-  group_by(DATE) |>
+  group_by(DATE, `SITE NAME`) |>
   group_split()
 
 
 ## Helper function
 # Creates the name for the file when it's saved
 create_file_name <- function (date, error_appended = "") {
-  return(paste("MHK_", date, "_profile", error_appended, ".csv", sep = ""))
+  return(paste(lakeID, date, "_profile", error_appended, ".csv", sep = ""))
 }
 
 ## Now, it's time to export all of the data in the correct format!
@@ -127,9 +128,19 @@ for (data.index in 1:length(split_data)) {
 
   #Get the number of rows for the profile
   numberOfRows<-nrow(temp.df)
+  
   #Generate a backwards depth vector
   depth_vector<-seq(nrow(temp.df)*0.25-0.25,0,by=-0.25)
   
+  temp.df <- temp.df %>%
+    mutate(
+      lakeID = case_when(
+        `SITE NAME` == "Osiris" ~ "OSR",
+        `SITE NAME` == "Mohonk" ~ "MHK",
+        TRUE                   ~ NA_character_
+      )
+    )  
+
   # Create a data frame with the headings of the formatted csv
   formatted_data <- temp.df %>% 
     select(
@@ -146,19 +157,26 @@ for (data.index in 1:length(split_data)) {
       tds_mgpL = starts_with("TDS"),
       barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
     mutate(
-      lakeID = "MHK",
+     lakeID = lakeID,
       Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
       waterPressure_barA = NA,
-    ###lat, long, and alt from Oleksy et al. 2024
-      latitude = 41.766,
-      longitude = '−74.158',
-      altitude_m = 379 )
+     if (lakeID == "MHK") {
+       ###lat, long, and alt from Oleksy et al. 2024
+       mutate(latitude = 41.766,
+              longitude = -74.158,
+              altitude_m = 379 )} 
+     ###lat, long, and alt from google
+     else if (lakeID == "OSR") {
+       mutate(latitude = 41.5797,
+              longitude = -74.1662,
+              altitude_m = 354 )})
+     
   
   #flips the rows of the dataframe
   #formatted_data <- formatted_data[nrow(formatted_data):1, ]
-  
+
   # Format the date to be file name friendly
   date <- temp.df$DATE[1]
   date_as_string <- sub("(\\d+)/(\\d+)/(\\d{4})$", "\\3/\\1/\\2", as.character(date))
