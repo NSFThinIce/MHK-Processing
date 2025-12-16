@@ -115,8 +115,8 @@ split_data <- exported_kor_file_data |>
 
 ## Helper function
 # Creates the name for the file when it's saved
-create_file_name <- function (date, error_appended = "") {
-  return(paste(lakeID, date, "_profile", error_appended, ".csv", sep = ""))
+create_file_name <- function (lakeID,date, error_appended = "") {
+  return(paste(lakeID,"_", date, "_profile", error_appended, ".csv", sep = ""))
 }
 
 ## Now, it's time to export all of the data in the correct format!
@@ -125,7 +125,9 @@ create_file_name <- function (date, error_appended = "") {
 for (data.index in 1:length(split_data)) {
   #Split out the single data frame####
   temp.df <- split_data[[data.index]]
-
+  
+  
+  
   #Get the number of rows for the profile
   numberOfRows<-nrow(temp.df)
   
@@ -135,9 +137,11 @@ for (data.index in 1:length(split_data)) {
 
   # Create a data frame with the headings of the formatted csv
   formatted_data <- temp.df %>% 
-    select(
+    rename(Site_Name=`SITE NAME`)%>%
+    dplyr::select(
       Date  = starts_with("DATE"),
       Time  = starts_with("TIME"),
+      Site_Name,
       temp_degC  = starts_with("TEMP"),
       doConcentration_mgpL = starts_with("DO (MG"),
       doSaturation_percent = starts_with("DO (% SAT"),
@@ -150,14 +154,24 @@ for (data.index in 1:length(split_data)) {
       barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
     mutate(
      lakeID = case_when(
-       `SITE NAME` == "Osiris" ~ "OSR",
-       `SITE NAME` == "Mohonk" ~ "MHK",
+       Site_Name == "Osiris" ~ "OSR",
+       Site_Name == "Mohonk" ~ "MHK",
        TRUE ~ NA_character_)) %>%  
     mutate(  
       Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
       waterPressure_barA = NA)
+    #Put the lat/long/elev in here
+  
+    #Get out the shortened lake name
+    lakeID<-formatted_data$lakeID[1]
+    
+    ##Make this a case_when
+    #latitude=case_when(lakeID=="MHK"~41.766,
+    #                    lakeID=="OSR"~41.5797,
+    #                    .default=NA
+    #            )
      if (lakeID == "MHK") {
        ###lat, long, and alt from Oleksy et al. 2024
        mutate(latitude = 41.766,
@@ -191,16 +205,16 @@ for (data.index in 1:length(split_data)) {
   date_as_string <- paste(year, month, day, sep = "_")
   
   # Path to the current file being created
-  current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, create_file_name(date_as_string))
+  current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, create_file_name(lakeID,date_as_string))
   
   # If the file is already there, then DO NOT overwrite it!
   if (!file.exists(current_file_to_save)) {
     # Save the data frame to a CSV file with the new file path
     # If the file has mistakes, append [MISTAKE FOUND] to the file name
     if (data_input_error == TRUE)
-      save_file_name <- create_file_name(date_as_string, error_type)
+      save_file_name <- create_file_name(lakeID,date_as_string, error_type)
     else
-      save_file_name <- create_file_name((date_as_string))
+      save_file_name <- create_file_name(lakeID,(date_as_string))
     
     # Since this file has mistakes, its name will be different an therefore current_file_to_save must be overwritten
     current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, save_file_name)
