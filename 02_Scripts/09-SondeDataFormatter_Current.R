@@ -11,7 +11,7 @@ library(readr) # Reads data
 library(dplyr) # Splits data
 
 #Which KOr export file are you working with - change it here####
-kor_export_file<-"KorExport_2024_06_05_to_2025_05_07.csv"
+kor_export_file<-"KorExport_2025_05_07_to_2025_12_03.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
@@ -178,7 +178,7 @@ for (data.index in 1:length(split_data)) {
     lakeID<-formatted_data$lakeID[1]
   
   #flips the rows of the dataframe
-  #formatted_data <- formatted_data[nrow(formatted_data):1, ]
+  formatted_data <- formatted_data[nrow(formatted_data):1, ]
 
   # Format the date to be file name friendly
   date <- temp.df$DATE[1]
