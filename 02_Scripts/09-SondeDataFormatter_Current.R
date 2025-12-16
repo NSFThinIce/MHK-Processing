@@ -131,15 +131,7 @@ for (data.index in 1:length(split_data)) {
   
   #Generate a backwards depth vector
   depth_vector<-seq(nrow(temp.df)*0.25-0.25,0,by=-0.25)
-  
-  temp.df <- temp.df %>%
-    mutate(
-      lakeID = case_when(
-        `SITE NAME` == "Osiris" ~ "OSR",
-        `SITE NAME` == "Mohonk" ~ "MHK",
-        TRUE                   ~ NA_character_
-      )
-    )  
+
 
   # Create a data frame with the headings of the formatted csv
   formatted_data <- temp.df %>% 
@@ -157,11 +149,15 @@ for (data.index in 1:length(split_data)) {
       tds_mgpL = starts_with("TDS"),
       barometerAirHandheld_mbars = starts_with("BAROMETER")) %>% 
     mutate(
-     lakeID = lakeID,
+     lakeID = case_when(
+       `SITE NAME` == "Osiris" ~ "OSR",
+       `SITE NAME` == "Mohonk" ~ "MHK",
+       TRUE ~ NA_character_)) %>%  
+    mutate(  
       Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
-      waterPressure_barA = NA,
+      waterPressure_barA = NA)
      if (lakeID == "MHK") {
        ###lat, long, and alt from Oleksy et al. 2024
        mutate(latitude = 41.766,
@@ -171,7 +167,7 @@ for (data.index in 1:length(split_data)) {
      else if (lakeID == "OSR") {
        mutate(latitude = 41.5797,
               longitude = -74.1662,
-              altitude_m = 354 )})
+              altitude_m = 354 )}
      
   
   #flips the rows of the dataframe
