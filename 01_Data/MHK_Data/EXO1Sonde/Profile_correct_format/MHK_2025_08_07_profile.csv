@@ -1,0 +1,2 @@
+Date,Time,Site_Name,temp_degC,doConcentration_mgpL,doSaturation_percent,chlorophyll_RFU,phycocyaninBGA_RFU_14C102008,specificConductivity_uSpcm,salinity_psu,tds_mgpL,barometerAirHandheld_mbars,lakeID,Depth_m,turbidity_Fnu,orp_MV,waterPressure_barA,latitude,longitude,altitude_m
+8/7/2025,14:43:14,Mohonk,27.698,10,127.1,2.72,-0.26,212.1,0.1,138,759.4,MHK,0,NA,NA,NA,41.766,-74.158,379

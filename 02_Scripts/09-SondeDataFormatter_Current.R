@@ -11,7 +11,7 @@ library(readr) # Reads data
 library(dplyr) # Splits data
 
 #Which KOr export file are you working with - change it here####
-kor_export_file<-"KorExport_2025_05_07_to_2025_12_03.csv"
+kor_export_file<-"KorExport_2024_06_05_to_2025_05_07.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
@@ -161,28 +161,21 @@ for (data.index in 1:length(split_data)) {
       Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
-      waterPressure_barA = NA)
-    #Put the lat/long/elev in here
+      waterPressure_barA = NA) %>% 
+    #lat/long/elev for mohonk from Olesky et al. 2024 and Osiris is from google
+    mutate(latitude=case_when(lakeID=="MHK"~41.766,
+                              lakeID=="OSR"~41.5797,
+                              .default=NA), 
+           
+           longitude=case_when(lakeID=="MHK"~ -74.158,
+                               lakeID=="OSR"~ -74.1662,
+                               .default=NA), 
+           altitude_m= case_when(lakeID == "MHK" ~ 379,
+                                 lakeID == "OSR" ~ 354,
+                                 .default = NA))
   
     #Get out the shortened lake name
     lakeID<-formatted_data$lakeID[1]
-    
-    ##Make this a case_when
-    #latitude=case_when(lakeID=="MHK"~41.766,
-    #                    lakeID=="OSR"~41.5797,
-    #                    .default=NA
-    #            )
-     if (lakeID == "MHK") {
-       ###lat, long, and alt from Oleksy et al. 2024
-       mutate(latitude = 41.766,
-              longitude = -74.158,
-              altitude_m = 379 )} 
-     ###lat, long, and alt from google
-     else if (lakeID == "OSR") {
-       mutate(latitude = 41.5797,
-              longitude = -74.1662,
-              altitude_m = 354 )}
-     
   
   #flips the rows of the dataframe
   #formatted_data <- formatted_data[nrow(formatted_data):1, ]
@@ -208,20 +201,20 @@ for (data.index in 1:length(split_data)) {
   current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, create_file_name(lakeID,date_as_string))
   
   # If the file is already there, then DO NOT overwrite it!
-  if (!file.exists(current_file_to_save)) {
+ #if (!file.exists(current_file_to_save)) {
     # Save the data frame to a CSV file with the new file path
     # If the file has mistakes, append [MISTAKE FOUND] to the file name
-    if (data_input_error == TRUE)
-      save_file_name <- create_file_name(lakeID,date_as_string, error_type)
-    else
-      save_file_name <- create_file_name(lakeID,(date_as_string))
+   # if (data_input_error == TRUE)
+    #  save_file_name <- create_file_name(lakeID,date_as_string, error_type)
+    #else
+     # save_file_name <- create_file_name(lakeID,(date_as_string))
     
     # Since this file has mistakes, its name will be different an therefore current_file_to_save must be overwritten
-    current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, save_file_name)
+    #current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR)
     
     # Ensure the file with mistakes does not exist already
-    if (!file.exists(current_file_to_save))
+    #if (!file.exists(current_file_to_save))
       readr::write_csv(formatted_data, current_file_to_save)
     
-  }
+  
 }

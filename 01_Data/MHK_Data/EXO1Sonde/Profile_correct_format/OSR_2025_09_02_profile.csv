@@ -1,0 +1,2 @@
+Date,Time,Site_Name,temp_degC,doConcentration_mgpL,doSaturation_percent,chlorophyll_RFU,phycocyaninBGA_RFU_14C102008,specificConductivity_uSpcm,salinity_psu,tds_mgpL,barometerAirHandheld_mbars,lakeID,Depth_m,turbidity_Fnu,orp_MV,waterPressure_barA,latitude,longitude,altitude_m
+9/2/2025,14:51:10,Osiris,18.832,8.57,92.1,0.01,-1.19,2.8,0,2,755.1,OSR,0,NA,NA,NA,41.5797,-74.1662,354
