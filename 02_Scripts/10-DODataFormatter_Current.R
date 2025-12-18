@@ -7,7 +7,7 @@ library(dplyr) # Splits data
 library(tidyverse)
 
 #Which KOr export file are you working with - change it here####
-Do_profile<-"MHK_2025_DOSensor.csv"
+Do_profile<-"Minnewaska_FieldData2025.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
@@ -58,7 +58,6 @@ DO_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "DOSensor", "DO_correct_form
 # This is the path to the exported Kor file
 DO_file_path <- DO_UNFORMATTED_DATA_ALL
 
-lakeID=substr(Do_profile,1,3)
 
 
 ## Guess the encoding of the file so that it can be read properly by R
@@ -112,7 +111,7 @@ exported_DO_file_data <- read_delim(DO_file_path, delim = ",", locale = locale(e
 # Using group_by, each element can be grouped according to its date
 # Then, using group_split each group will be put into a separate tibble and then they all are stored in a list
 split_data <- exported_DO_file_data |> 
-  group_by(collect_date) |>
+  group_by(collect_date, site_no) |>
   group_split()
 
 
@@ -133,15 +132,22 @@ for (data.index in 1:length(split_data)) {
   # Create a data frame with the headings of the formatted csv
   formatted_data <- DO.df %>%
     dplyr::select(
-      Date  = starts_with("collect"),
-      temp_degC_probe  = starts_with("Temp_C"),
+      Date  = starts_with("collect_da"),
+      temp_degC_probe  = starts_with("Temp_C_DOProbe"),
       doConcentration_mgpL_probe = starts_with("DO_mg"),
       doSaturation_percent_probe = starts_with("DO_Sat"), 
-      Depth_m= "Depth_m") %>% 
-    mutate(lakeID = lakeID) %>% 
-    mutate(Date=as.Date(parse_date_time(Date,orders=c("ymd","mdy"))))
+      Depth_m= "Depth_m",
+      site_no) %>% 
+     mutate(
+      lakeID = case_when(
+        site_no == "Osiris" ~ "OSR",
+        site_no == "MOHK_D10" ~ "MHK",
+        TRUE ~ NA_character_)) %>% 
+    mutate(Date=as.Date(parse_date_time(Date, orders = c("ymd", "mdy", "dmy"))))
   
-
+  #Get out the shortened lake name
+  lakeID<-formatted_data$lakeID[1]
+  
   # Format the date to be file name friendly
   date <- formatted_data$Date[1]
   date_as_string <- sub("(\\d+)/(\\d+)/(\\d{4})$", "\\3/\\1/\\2", as.character(date))
@@ -153,6 +159,7 @@ for (data.index in 1:length(split_data)) {
   month <- substr(date_split,6,7)
   day <- substr(date_split,9,10)
   
+  
   if (nchar(day) < 2) day <- paste("0", day, sep = "")
   if (nchar(month) < 2) month <- paste("0", month, sep = "")
   
@@ -161,6 +168,7 @@ for (data.index in 1:length(split_data)) {
   
   # Path to the current file being created
   current_file_to_save <- file.path(DO_FORMATTED_DATA_DIR, create_file_name(lakeID,date_as_string))
+  
   
   # Ensure the file with mistakes does not exist already
   readr::write_csv(formatted_data, current_file_to_save)

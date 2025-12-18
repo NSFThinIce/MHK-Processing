@@ -1,4 +1,4 @@
-﻿sample_no,Depth_m,collect_date,Temp_C_DOProbe,DO_mgpL,DO_Sat_Percent
+sample_no,Depth_m,collect_date,Temp_C_DOProbe,DO_mgpL,DO_Sat_Percent
 1,0,2024-01-03 00:00:00 UTC,3.4,11.21,88
 1,1,2024-01-03 00:00:00 UTC,3.9,10.93,86.9
 1,2,2024-01-03 00:00:00 UTC,3.8,10.9,86.4
