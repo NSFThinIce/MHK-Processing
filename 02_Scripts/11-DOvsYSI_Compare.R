@@ -28,7 +28,8 @@ extract_date <- function(x){
 }
 
 
-pdf(paste0("05_Outputs/YSI_DO_plots_",yearIndex,".pdf"), onefile = TRUE,width=8.5,height=11)
+pdf(paste0("05_Outputs/YSI_DO_plots_",d,".pdf"), onefile = TRUE,width=8.5,height=11)
+
 
 ysi_df <- tibble(file = YSI_profiles,
                  date = extract_date(YSI_profiles),
