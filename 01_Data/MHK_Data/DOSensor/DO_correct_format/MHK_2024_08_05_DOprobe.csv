@@ -1,4 +1,4 @@
-Date,temp_degC_probe,doConcentration_mgpL_probe,doSaturation_percent_probe,Depth_m,lakeID
+Date,temp_degC,doConcentration_mgpL,doSaturation_percent,Depth_m,lakeID
 2024-08-05,27,8.25,108.3,0,MHK
 2024-08-05,26.5,8.35,108.5,1,MHK
 2024-08-05,26.1,8.48,109.4,2,MHK

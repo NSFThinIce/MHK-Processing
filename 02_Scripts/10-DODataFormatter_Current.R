@@ -133,9 +133,9 @@ for (data.index in 1:length(split_data)) {
   formatted_data <- DO.df %>%
     dplyr::select(
       Date  = starts_with("collect_da"),
-      temp_degC_probe  = starts_with("Temp_C_DOProbe"),
-      doConcentration_mgpL_probe = starts_with("DO_mg"),
-      doSaturation_percent_probe = starts_with("DO_Sat"), 
+      temp_degC  = starts_with("Temp_C_DOProbe"),
+      doConcentration_mgpL = starts_with("DO_mg"),
+      doSaturation_percent = starts_with("DO_Sat"), 
       Depth_m= "Depth_m",
       site_no) %>% 
      mutate(
