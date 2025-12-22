@@ -3,8 +3,8 @@
 ##Authors Hannah Cane 
 
 #Libraries####
-`if (!require(tidyverse)) {install.packages("tidyverse")}
-if(!require(patchwork)){install.packages("patchwork")}
+if (!require(tidyverse)) {install.packages("tidyverse")}
+if (!require(patchwork)){install.packages("patchwork")}
 #Load packages####
 library(tidyverse) #for dplyr and ggplot
 library(patchwork)
@@ -28,7 +28,6 @@ extract_date <- function(x){
 }
 
 
-pdf(paste0("05_Outputs/YSI_DO_plots_",d,".pdf"), onefile = TRUE,width=8.5,height=11)
 
 
 ysi_df <- tibble(file = YSI_profiles,
@@ -40,73 +39,81 @@ do_df  <- tibble(file = DO_profiles,
                  type = "DOprobe")
 
 # merge lists
-all_files <- bind_rows(ysi_df, do_df)
+all_files <- inner_join(ysi_df, do_df,by="date")%>%
+              rename(file_YSI=file.x,
+                     file_Hach=file.y)
 
-unique_dates <- unique(all_files$date)
+#Get out the dates - they should be unique from the inner_join statement
+unique_dates <- all_files$date
 
+pdf(paste0("05_Outputs/YSI_DO_plots_",yearIndex,".pdf"), onefile = TRUE,width=8.5,height=11)
 
-for(d in unique_dates){
+#Loop through all the dates for this year####
+#debug day.index<-1
+for(day.index in 1:length(unique_dates)){
   
   # files for that date
-  todays_files <- all_files %>% filter(date == d)
+  todays_files <- all_files %>% filter(date == unique_dates[day.index])
   
-  # read and label
-  df <- map_df(1:nrow(todays_files), function(i){
-    read_csv(todays_files$file[i]) %>% 
-      mutate(Source = todays_files$type[i],
-             Date = d)
-  })
+  #Read in the Hach and YSI data
+  temp.Hach<-read_csv(all_files$file_Hach[day.index])%>%
+              dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
+              rename_with(~ paste0(., "_Hach"), .cols = temp_degC:doSaturation_percent)
+  temp.YSI<-read_csv(all_files$file_YSI[day.index])%>%
+              mutate(Date=mdy(Date))%>% #gotta get the date in the correct format
+              dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
+              rename_with(~ paste0(., "_YSI"), .cols = temp_degC:doSaturation_percent)
+  #####STOPPED HERE - NEED TO SHORTEN THE TABLE NAMES####
   
-  # plot – all variables vs depth
-  temp_degC <- ggplot(df) +
-    geom_path(aes(x = temp_degC,       y = Depth_m, color = Source), linewidth = 1) +
-    scale_y_reverse() +
-    labs(
-      title = paste("Depth Profiles:", d),
-      y = "Depth (m)",
-      color = "Profile"
-    ) +
+  
+  #Left_join with YSI
+  merged_DF<-left_join(temp.YSI,temp.Hach)
+  
+  #Plot temperature comparison
+  gg.temp_degC<-ggplot(data=merged_DF)+
+    geom_path(aes(x=temp_degC_YSI,y=Depth_m),color="red")+
+    geom_point(aes(x=temp_degC_YSI,y=Depth_m),color="red")+
+    geom_path(aes(x=temp_degC_Hach,y=Depth_m),color="blue")+
+    geom_point(aes(x=temp_degC_Hach,y=Depth_m),color="blue")+
+    scale_y_reverse()+
     theme_bw()
   
-  Temptbl <- df %>%
-    select(Source, Depth_m, temp_degC) %>% 
-    tableGrob()
-  
-  doSaturation_percent <- ggplot(df) +
-      geom_path(aes(x = doSaturation_percent, y = Depth_m, color = Source), linetype = 1) +
-    scale_y_reverse() +
-    labs(
-      title = paste("Depth Profiles:", d),
-      y = "Depth (m)",
-      color = "Profile"
-    ) +
-    theme_bw()
-  DOsattbl <- df %>%
-    select(Source, Depth_m, doSaturation_percent) %>% 
-    tableGrob()
-  
-  
-  doConcentration_mgpL <- ggplot(df) +
-    geom_path(aes(x = doConcentration_mgpL,     y = Depth_m, color = Source), linetype = 1) +
-    scale_y_reverse() +
-    labs(
-      title = paste("Depth Profiles:", d),
-      y = "Depth (m)",
-      color = "Profile"
-    ) +
+  gg.doConcentration_mgpL<-ggplot(data=merged_DF)+
+    geom_path(aes(x=doConcentration_mgpL_YSI,y=Depth_m),color="red")+
+    geom_point(aes(x=doConcentration_mgpL_YSI,y=Depth_m),color="red",shape=1)+
+    geom_path(aes(x=doConcentration_mgpL_Hach,y=Depth_m),color="blue")+
+    geom_point(aes(x=doConcentration_mgpL_Hach,y=Depth_m),color="blue",shape=1)+
+    scale_y_reverse()+
     theme_bw()
   
-  DOcontbl <- df %>%
-    select(Source, Depth_m, doConcentration_mgpL) %>% 
-    tableGrob()
   
+  gg.doSaturation_percent<-ggplot(data=merged_DF)+
+    geom_path(aes(x=doSaturation_percent_YSI,y=Depth_m),color="red")+
+    geom_point(aes(x=doSaturation_percent_YSI,y=Depth_m),color="red",shape=2)+
+    geom_path(aes(x=doSaturation_percent_Hach,y=Depth_m),color="blue")+
+    geom_point(aes(x=doSaturation_percent_Hach,y=Depth_m),color="blue",shape=2)+
+    scale_y_reverse()+
+    theme_bw()
   
-  List<-list(temp_degC,Temptbl, doSaturation_percent,DOsattbl, doConcentration_mgpL, DOcontbl)
+  # tableGrob converts the data frame into a graphical table object (grob)
+  mytheme <- gridExtra::ttheme_default(
+    core = list(fg_params=list(cex = 0.5)),
+    colhead = list(fg_params=list(cex = 0.5)),
+    rowhead = list(fg_params=list(cex = 0.5)))
+  table_grob <- tableGrob(merged_DF%>%
+                            dplyr::select(Date,Depth_m,temp_degC_YSI,temp_degC_Hach,doSaturation_percent_YSI,doSaturation_percent_Hach)%>%
+                            mutate(temp_degC_YSI=round(temp_degC_YSI,1)),theme=mytheme)
+  
+  #Get the figures for the left hand side
+  List<-list(gg.temp_degC,gg.doSaturation_percent,gg.doConcentration_mgpL)
   
   #Plot them using patchwork####
-  gg.4panel<-wrap_plots(List,ncol = 2,nrow = 3)
-  print(gg.4panel)
+  gg.left_panel<-wrap_plots(List,ncol = 1,nrow = 3)
+  
+  List2<-list(gg.left_panel,table_grob)
 
+  gg.both<-wrap_plots(List2,ncol=2,nrow=1)  
+  print(gg.both)
 }
 
 dev.off()
