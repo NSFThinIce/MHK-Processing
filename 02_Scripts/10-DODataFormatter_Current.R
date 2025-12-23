@@ -52,7 +52,7 @@ DO_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "DOSensor", "DO_profile")
 DO_UNFORMATTED_DATA_ALL <- file.path(DO_UNFORMATTED_DATA_DIR, Do_profile)
 
 # Directory containing all of the formatted data from Kor Software and formatted with a script
-DO_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "DOSensor", "DO_correct_format")
+DO_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "DOSensor", "DO_correct_format", year)
 
 
 # This is the path to the exported Kor file
@@ -165,6 +165,10 @@ for (data.index in 1:length(split_data)) {
   
   # Converts the date to a string
   date_as_string <- paste(year, month, day, sep = "_")
+  
+  
+  DO_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "DOSensor", "DO_correct_format", year)
+  
   
   # Path to the current file being created
   current_file_to_save <- file.path(DO_FORMATTED_DATA_DIR, create_file_name(lakeID,date_as_string))

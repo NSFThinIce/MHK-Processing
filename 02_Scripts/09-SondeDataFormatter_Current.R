@@ -11,7 +11,7 @@ library(readr) # Reads data
 library(dplyr) # Splits data
 
 #Which KOr export file are you working with - change it here####
-kor_export_file<-"KorExport_2025_05_07_to_2025_12_03.csv"
+kor_export_file<-"KorExport_2024_06_05_to_2025_05_07.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
@@ -56,7 +56,7 @@ KOR_UNFORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "KorFormat")
 KOR_UNFORMATTED_DATA_ALL <- file.path(KOR_UNFORMATTED_DATA_DIR, kor_export_file)
 
 # Directory containing all of the formatted data from Kor Software and formatted with a script
-KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format")
+KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format", year)
 
 # This is the path to the exported Kor file
 kor_file_path <- KOR_UNFORMATTED_DATA_ALL
@@ -196,6 +196,10 @@ for (data.index in 1:length(split_data)) {
   
   # Converts the date to a string
   date_as_string <- paste(year, month, day, sep = "_")
+  
+  
+  KOR_FORMATTED_DATA_DIR <- file.path(MOHONK_DATA_DIR, "EXO1Sonde", "Profile_correct_format", year)
+  
   
   # Path to the current file being created
   current_file_to_save <- file.path(KOR_FORMATTED_DATA_DIR, create_file_name(lakeID,date_as_string))
