@@ -1,5 +1,5 @@
-##Comparing YSI profiles to DO profiles##
-##created on 19Dec2025
+##Comparing YSI profiles to DO profiles after correction##
+##created on 06Jan2026
 ##Authors Hannah Cane 
 
 #Libraries####
@@ -15,7 +15,7 @@ yearIndex<-"2024"
 
 #List files####
 DO_profiles <- list.files(path = paste0("01_Data/MHK_Data/DOSensor/DO_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
-YSI_profiles <- list.files(path = paste0("01_Data/MHK_Data/EXO1Sonde/Profile_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
+YSI_profiles <- list.files(path = paste0("01_Data/MHK_Data/EXO1Sonde/Cleaned_data/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
 
 # function to extract date 
 extract_date <- function(x){
@@ -35,14 +35,14 @@ do_df  <- tibble(file = DO_profiles,
 
 # merge lists
 all_files <- inner_join(ysi_df, do_df,by="date")%>%
-              rename(file_YSI=file.x,
-                     file_Hach=file.y)%>%
-              arrange(date)
+  rename(file_YSI=file.x,
+         file_Hach=file.y)%>%
+  arrange(date)
 
 #Get out the dates - they should be unique from the inner_join statement
 unique_dates <- all_files$date
 
-pdf(paste0("05_Outputs/YSI_DO_plots_",yearIndex,".pdf"), onefile = TRUE,width=8.5,height=15)
+pdf(paste0("05_Outputs/CORRECTED_YSI_DO_plots_",yearIndex,".pdf"), onefile = TRUE,width=8.5,height=15)
 
 #Loop through all the dates for this year####
 #debug day.index<-1
@@ -54,13 +54,13 @@ for(day.index in 1:length(unique_dates)){
   #Read in the Hach and YSI data####
   #*suppress the read in messages####
   temp.Hach<-read_csv(all_files$file_Hach[day.index], show_col_types = FALSE)%>%
-              dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
-              rename_with(~ paste0(., "_Hach"), .cols = temp_degC:doSaturation_percent)
+    dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
+    rename_with(~ paste0(., "_Hach"), .cols = temp_degC:doSaturation_percent)
   temp.YSI<-read_csv(all_files$file_YSI[day.index], show_col_types = FALSE)%>%
-              mutate(Date=mdy(Date))%>% #gotta get the date in the correct format
-              dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
-              rename_with(~ paste0(., "_YSI"), .cols = temp_degC:doSaturation_percent)
-
+    mutate(Date=mdy(Date))%>% #gotta get the date in the correct format
+    dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
+    rename_with(~ paste0(., "_YSI"), .cols = temp_degC:doSaturation_percent)
+  
   
   
   #Left_join with YSI
@@ -104,7 +104,7 @@ for(day.index in 1:length(unique_dates)){
                                    t_hach=temp_degC_Hach,
                                    doSat_ysi=doSaturation_percent_YSI,
                                    doSat_Hach=doSaturation_percent_Hach)
-                            ,theme=mytheme)
+                          ,theme=mytheme)
   
   #Get the figures for the left hand side
   List<-list(gg.temp_degC,gg.doSaturation_percent,gg.doConcentration_mgpL)
@@ -113,7 +113,7 @@ for(day.index in 1:length(unique_dates)){
   gg.left_panel<-wrap_plots(List,ncol = 1,nrow = 3)
   
   List2<-list(gg.left_panel,table_grob)
-
+  
   gg.both<-wrap_plots(List2,ncol=2,nrow=1)  
   print(gg.both)
 }

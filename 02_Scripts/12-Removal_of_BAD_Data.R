@@ -30,13 +30,14 @@ extract_date <- function(x){
 
 
 
+
 ysi_df <- tibble(file = YSI_profiles,
                  date = extract_date(YSI_profiles),
                  type = "YSI")
 
 
 #Debug date.index<-2
-for(date.index in 1:length(ysi_df)){
+for(date.index in 1:nrow(ysi_df)){
   
   # files for that date
   todays_files <- ysi_df %>% filter(date == ysi_df[date.index,"date"] %>% pull())
@@ -64,7 +65,7 @@ for(date.index in 1:length(ysi_df)){
                 filter(Date == date_as_string)
   
 
- temp.YSI.cleaned <- todays_files %>%
+  temp.YSI.cleaned <- todays_files %>%
     filter(date == date) %>%     # select row based on date
     pull(file) %>%                        # extract file path
     read_csv(show_col_types = FALSE) %>%
@@ -81,8 +82,8 @@ for(date.index in 1:length(ysi_df)){
    if(is.na(remove_df_begin)|is.na(remove_df_end)){}else{
      
      #Extract the depths for that row
-     depth_begin<-temp.YSI$Depth_m[remove_df_begin]
-     depth_end<-temp.YSI$Depth_m[remove_df_end]
+     depth_begin<-temp.YSI.cleaned$Depth_m[remove_df_begin]
+     depth_end<-temp.YSI.cleaned$Depth_m[remove_df_end]
      
      #Filter out based on the depths
      temp.YSI.cleaned<-temp.YSI.cleaned%>%filter(Depth_m<depth_begin|Depth_m>depth_end)
@@ -93,21 +94,21 @@ for(date.index in 1:length(ysi_df)){
  } #End of the for loop
 
  ##creating a new depth vector 
- depth_vector<-seq(
-   from = 0,
-   by   = 0.25,
-   length.out = nrow(temp.YSI.cleaned)
- ) %>% rev()
- 
+  depth_vector<-seq(0, by = 0.25, length.out = nrow(temp.YSI.cleaned))
+  
  ##adding new depths as a column 
  temp.YSI.cleaned <- temp.YSI.cleaned %>%  mutate(  
    Depth_m = depth_vector)
  
 # write CSV 
-  newfilename<-paste(str_extract(substr(todays_files$file,1,nchar(todays_files$file)-4), "[^/]+$"),"_clean.csv",sep="")
+ 
+FORMATTED_DATA_DIR <- file.path("01_Data", "MHK_Data", "Exo1Sonde", "Cleaned_data", year)
+ 
+newfilename<-paste(str_extract(substr(todays_files$file,1,nchar(todays_files$file)-4), "[^/]+$"),"_clean.csv",sep="")
   
-  
-  write_csv(x=temp.YSI.cleaned,file=paste0("01_Data/MHK_Data/Exo1Sonde/Cleaned_data/",newfilename))
+current_file_to_save <- file.path(FORMATTED_DATA_DIR,newfilename)
+
+  write_csv(x=temp.YSI.cleaned,file=paste0(current_file_to_save))
 }
 
 
