@@ -64,7 +64,7 @@ for(date.index in 1:length(ysi_df)){
                 filter(Date == date_as_string)
   
 
- temp.YSI <- todays_files %>%
+ temp.YSI.cleaned <- todays_files %>%
     filter(date == date) %>%     # select row based on date
     pull(file) %>%                        # extract file path
     read_csv(show_col_types = FALSE) %>%
@@ -84,13 +84,9 @@ for(date.index in 1:length(ysi_df)){
      depth_begin<-temp.YSI$Depth_m[remove_df_begin]
      depth_end<-temp.YSI$Depth_m[remove_df_end]
      
-     #If it is the first one, then remove the rows from the original,
-     #otherwise remove the rows from the edited data frame
-     if(remove.index==1){
-       temp.YSI.cleaned<-temp.YSI%>%filter(Depth_m<depth_begin|Depth_m>depth_end)   
-     }else{
-       temp.YSI.cleaned<-temp.YSI.cleaned%>%filter(Depth_m<depth_begin|Depth_m>depth_end)
-     } #End of checking the row index
+     #Filter out based on the depths
+     temp.YSI.cleaned<-temp.YSI.cleaned%>%filter(Depth_m<depth_begin|Depth_m>depth_end)
+
      
    } #end of checking NA   
      
