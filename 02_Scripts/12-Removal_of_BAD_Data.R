@@ -59,13 +59,7 @@ for(date.index in 1:length(ysi_df)){
   date_as_string <- paste(year, month, day, sep = "-")
   
   
-  ## get out date (xxxx-xx-xx) 
-  ## read in remove with new date
-  ## read csv using todays_files file column 
-  ## 10 if blocks 
-    ##if not NA begin remove 
-    ## if NA do nothing 
-  ##slice 
+  
   remove_df <- lines_remove %>%
                 filter(Date == date_as_string)
   
@@ -74,14 +68,16 @@ for(date.index in 1:length(ysi_df)){
     filter(date == date) %>%     # select row based on date
     pull(file) %>%                        # extract file path
     read_csv(show_col_types = FALSE) %>%
-    mutate(date = mdy(Date)) 
+    mutate(date = mdy(Date))
 
- #debug remove.index<-2
+ #debug remove.index<-1
  for(remove.index in 1:10){
    remove_df_begin<-remove_df[1,paste0("BeginRow",remove.index)]%>%pull()
    remove_df_end<-remove_df[1,paste0("EndRow",remove.index)]%>%pull()
    
-      #Checks if the begining or ending rows are NA and do nothing   
+   
+   
+      #Checks if the beginning or ending rows are NA and do nothing   
    if(is.na(remove_df_begin)|is.na(remove_df_end)){}else{
      
      #Extract the depths for that row
@@ -99,29 +95,23 @@ for(date.index in 1:length(ysi_df)){
    } #end of checking NA   
      
  } #End of the for loop
- 
- 
-  ##Need to change- make sure it removes correct rows when running multiple times####
-  for (i in seq_len(nrow(remove_df))) {
-    
-    if (!is.na(remove_df$BeginRow1[i]) &&
-        !is.na(remove_df$EndRow1[i])) {
-      
-      temp.YSI_clean <- temp.YSI %>%
-        slice(-seq(remove_df$BeginRow1[i],
-                   remove_df$EndRow1[i]))
-      
-    } else {
-      next   # do nothing
-    }
-  }
 
-
+ ##creating a new depth vector 
+ depth_vector<-seq(
+   from = 0,
+   by   = 0.25,
+   length.out = nrow(temp.YSI.cleaned)
+ ) %>% rev()
+ 
+ ##adding new depths as a column 
+ temp.YSI.cleaned <- temp.YSI.cleaned %>%  mutate(  
+   Depth_m = depth_vector)
+ 
 # write CSV 
   newfilename<-paste(str_extract(substr(todays_files$file,1,nchar(todays_files$file)-4), "[^/]+$"),"_clean.csv",sep="")
   
   
-  write_csv(x=temp.YSI_clean,file=paste0("01_Data/MHK_Data/Exo1Sonde/Cleaned_data/",newfilename))
+  write_csv(x=temp.YSI.cleaned,file=paste0("01_Data/MHK_Data/Exo1Sonde/Cleaned_data/",newfilename))
 }
 
 
