@@ -34,6 +34,8 @@ ysi_df <- tibble(file = YSI_profiles,
                  date = extract_date(YSI_profiles),
                  type = "YSI")
 
+
+#Debug date.index<-2
 for(date.index in 1:length(ysi_df)){
   
   # files for that date
@@ -67,13 +69,38 @@ for(date.index in 1:length(ysi_df)){
   remove_df <- lines_remove %>%
                 filter(Date == date_as_string)
   
- 
+
  temp.YSI <- todays_files %>%
     filter(date == date) %>%     # select row based on date
     pull(file) %>%                        # extract file path
     read_csv(show_col_types = FALSE) %>%
     mutate(date = mdy(Date)) 
 
+ #debug remove.index<-2
+ for(remove.index in 1:10){
+   remove_df_begin<-remove_df[1,paste0("BeginRow",remove.index)]%>%pull()
+   remove_df_end<-remove_df[1,paste0("EndRow",remove.index)]%>%pull()
+   
+      #Checks if the begining or ending rows are NA and do nothing   
+   if(is.na(remove_df_begin)|is.na(remove_df_end)){}else{
+     
+     #Extract the depths for that row
+     depth_begin<-temp.YSI$Depth_m[remove_df_begin]
+     depth_end<-temp.YSI$Depth_m[remove_df_end]
+     
+     #If it is the first one, then remove the rows from the original,
+     #otherwise remove the rows from the edited data frame
+     if(remove.index==1){
+       temp.YSI.cleaned<-temp.YSI%>%filter(Depth_m<depth_begin|Depth_m>depth_end)   
+     }else{
+       temp.YSI.cleaned<-temp.YSI.cleaned%>%filter(Depth_m<depth_begin|Depth_m>depth_end)
+     } #End of checking the row index
+     
+   } #end of checking NA   
+     
+ } #End of the for loop
+ 
+ 
   ##Need to change- make sure it removes correct rows when running multiple times####
   for (i in seq_len(nrow(remove_df))) {
     
