@@ -1,0 +1,101 @@
+##Removing incorrect rows from YSI data##
+##created on 06Jan2026
+##Authors Hannah Cane 
+
+#Libraries####
+if (!require(tidyverse)) {install.packages("tidyverse")}
+if (!require(patchwork)){install.packages("patchwork")}
+#Load packages####
+library(tidyverse) #for dplyr and ggplot
+library(patchwork)
+library(gridExtra)
+
+##Take each year separately
+##read in files as a list
+##read in csv that contains which rows to remove for each date 
+##removes those rows and saves new csv
+
+#Set year####
+yearIndex<-"2024"
+
+YSI_profiles <- list.files(path = paste0("01_Data/MHK_Data/EXO1Sonde/Profile_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
+lines_remove <- read_csv("01_Data/MHK_Data/EXO1Sonde/EvaluationFiles/MohonkYSI_ProfileEvaluation_2024.csv")
+
+
+# function to extract date 
+extract_date <- function(x){
+  substr(basename(x), 5, 14)  # assuming date is in positions 5 to 12 in filename
+}
+
+
+
+
+ysi_df <- tibble(file = YSI_profiles,
+                 date = extract_date(YSI_profiles),
+                 type = "YSI")
+
+for(date.index in 1:length(ysi_df)){
+  
+  # files for that date
+  todays_files <- ysi_df %>% filter(date == ysi_df[date.index,"date"] %>% pull())
+  
+  # Format the date to be file name friendly
+  date <- todays_files$date[1]
+  date_as_string <- sub("(\\d+)/(\\d+)/(\\d{4})$", "\\3/\\1/\\2", as.character(date))
+  
+  ## If there are no leading zeros for the month or day, then append a 0 to the string
+  date_split <- strsplit(date_as_string, "/")
+  
+  year <- substr(date_split,1,4)
+  month <- substr(date_split,6,7)
+  day <- substr(date_split,9,10)
+  
+  if (nchar(day) < 2) day <- paste("0", day, sep = "")
+  if (nchar(month) < 2) month <- paste("0", month, sep = "")
+  
+  # Converts the date to a string
+  date_as_string <- paste(year, month, day, sep = "-")
+  
+  
+  ## get out date (xxxx-xx-xx) 
+  ## read in remove with new date
+  ## read csv using todays_files file column 
+  ## 10 if blocks 
+    ##if not NA begin remove 
+    ## if NA do nothing 
+  ##slice 
+  remove_df <- lines_remove %>%
+                filter(Date == date_as_string)
+  
+ 
+ temp.YSI <- todays_files %>%
+    filter(date == date) %>%     # select row based on date
+    pull(file) %>%                        # extract file path
+    read_csv(show_col_types = FALSE) %>%
+    mutate(date = mdy(Date)) 
+
+  ##Need to change- make sure it removes correct rows when running multiple times####
+  for (i in seq_len(nrow(remove_df))) {
+    
+    if (!is.na(remove_df$BeginRow1[i]) &&
+        !is.na(remove_df$EndRow1[i])) {
+      
+      temp.YSI_clean <- temp.YSI %>%
+        slice(-seq(remove_df$BeginRow1[i],
+                   remove_df$EndRow1[i]))
+      
+    } else {
+      next   # do nothing
+    }
+  }
+
+
+# write CSV 
+  newfilename<-paste(str_extract(substr(todays_files$file,1,nchar(todays_files$file)-4), "[^/]+$"),"_clean.csv",sep="")
+  
+  
+  write_csv(x=temp.YSI_clean,file=paste0("01_Data/MHK_Data/Exo1Sonde/Cleaned_data/",newfilename))
+}
+
+
+
