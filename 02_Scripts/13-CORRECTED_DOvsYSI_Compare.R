@@ -11,7 +11,7 @@ library(patchwork)
 library(gridExtra)
 
 #Set year####
-yearIndex<-"2024"
+yearIndex<-"2025"
 
 #List files####
 DO_profiles <- list.files(path = paste0("01_Data/MHK_Data/DOSensor/DO_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
