@@ -5,13 +5,14 @@
 #Libraries####
 if (!require(tidyverse)) {install.packages("tidyverse")}
 if (!require(patchwork)){install.packages("patchwork")}
+if (!require(gridExtra)){install.packages("gridExtra")}
 #Load packages####
 library(tidyverse) #for dplyr and ggplot
 library(patchwork)
 library(gridExtra)
 
 #Set year####
-yearIndex<-"2024"
+yearIndex<-"2026"
 
 #List files####
 DO_profiles <- list.files(path = paste0("01_Data/MHK_Data/DOSensor/DO_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)

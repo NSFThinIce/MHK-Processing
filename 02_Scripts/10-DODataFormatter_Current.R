@@ -7,7 +7,7 @@ library(dplyr) # Splits data
 library(tidyverse)
 
 #Which KOr export file are you working with - change it here####
-Do_profile<-"Minnewaska_FieldData2025.csv"
+Do_profile<-"Minnewaska_FieldData2026.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
