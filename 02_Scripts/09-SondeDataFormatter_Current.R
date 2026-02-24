@@ -11,7 +11,7 @@ library(readr) # Reads data
 library(dplyr) # Splits data
 
 #Which KOr export file are you working with - change it here####
-kor_export_file<-"KorExport_2024_06_05_to_2025_05_07.csv"
+kor_export_file<-"KorExport_2025_12_04_to_2026_02_19.csv"
 
 # Adds a list of global variables into the current environment from 00_Globals.r
 # This portion of the code assumes that you are in the root of the repository
