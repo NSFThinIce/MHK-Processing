@@ -68,6 +68,7 @@ kor_file_path <- KOR_UNFORMATTED_DATA_ALL
 possible_encoding <- as.character(guess_encoding(kor_file_path)[1, 1])
 
 
+
 ## R fails to read files encoded in ASCII for some reason; however, there's a solution!
 # Because UTF-8 is a superset of ASCII, all ASCII characters are UTF-8 characters!
 # So far, there have been no issues with treating ASCII files like UTF-8 files
@@ -147,7 +148,7 @@ for (data.index in 1:length(split_data)) {
       doSaturation_percent = starts_with("DO (% SAT"),
       chlorophyll_RFU = starts_with("CHLOROPHYLL"),
       phycocyaninBGA_RFU_14C102008  = starts_with("PHYCOCYANIN"),
-      pH  = starts_with("pH-"),
+     # pH  = starts_with("pH-"),
       specificConductivity_uSpcm = starts_with("SP COND"),
       salinity_psu = starts_with("SAL (PSU"),
       tds_mgpL = starts_with("TDS"),
@@ -161,7 +162,8 @@ for (data.index in 1:length(split_data)) {
       Depth_m = depth_vector,
       turbidity_Fnu = NA,
       orp_MV = NA,
-      waterPressure_barA = NA) %>% 
+      waterPressure_barA = NA, 
+      ) %>% 
     #lat/long/elev for mohonk from Olesky et al. 2024 and Osiris is from google
     mutate(latitude=case_when(lakeID=="MHK"~41.766,
                               lakeID=="OSR"~41.5797,

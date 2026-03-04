@@ -16,7 +16,7 @@ library(gridExtra)
 ##removes those rows and saves new csv
 
 #Set year####
-yearIndex<-"2026"
+yearIndex<-"2025"
 
 YSI_profiles <- list.files(path = paste0("01_Data/MHK_Data/EXO1Sonde/Profile_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
 lines_remove <- read_csv("01_Data/MHK_Data/EXO1Sonde/EvaluationFiles/MohonkYSI_ProfileEvaluation_2026.csv")

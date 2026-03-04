@@ -1,2 +1,2 @@
-Date,Time,Site_Name,temp_degC,doConcentration_mgpL,doSaturation_percent,chlorophyll_RFU,phycocyaninBGA_RFU_14C102008,specificConductivity_uSpcm,salinity_psu,tds_mgpL,barometerAirHandheld_mbars,lakeID,Depth_m,turbidity_Fnu,orp_MV,waterPressure_barA,latitude,longitude,altitude_m
-2/17/2026,11:58:56,Mohonk,0.713,15.62,109.1,3.86,1.81,290,0.14,189,754.1,MHK,0,NA,NA,NA,41.766,-74.158,379
+Date,Time,Site_Name,temp_degC,doConcentration_mgpL,doSaturation_percent,chlorophyll_RFU,phycocyaninBGA_RFU_14C102008,specificConductivity_uSpcm,salinity_psu,tds_mgpL,barometerAirHandheld_mbars,lakeID,Depth_m,turbidity_Fnu,orp_MV,waterPressure_barA,pH,latitude,longitude,altitude_m
+2/17/2026,11:58:56,Mohonk,0.713,15.62,109.1,3.86,1.81,290,0.14,189,754.1,MHK,0,NA,NA,NA,NA,41.766,-74.158,379
