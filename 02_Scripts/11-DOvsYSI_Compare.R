@@ -38,7 +38,7 @@ do_df  <- tibble(file = DO_profiles,
 all_files <- inner_join(ysi_df, do_df,by="date")%>%
               rename(file_YSI=file.x,
                      file_Hach=file.y)%>%
-              arrange(date)
+              arrange(date) 
 
 #Get out the dates - they should be unique from the inner_join statement
 unique_dates <- all_files$date
@@ -65,7 +65,8 @@ for(day.index in 1:length(unique_dates)){
   
   
   #Left_join with YSI
-  merged_DF<-left_join(temp.YSI,temp.Hach)
+  merged_DF<-left_join(temp.YSI,temp.Hach) 
+  
   
   #Plot temperature comparison
   gg.temp_degC<-ggplot(data=merged_DF)+
