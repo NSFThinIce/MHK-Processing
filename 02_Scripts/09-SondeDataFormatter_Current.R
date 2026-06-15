@@ -163,6 +163,7 @@ for (data.index in 1:length(split_data)) {
       turbidity_Fnu = NA,
       orp_MV = NA,
       waterPressure_barA = NA, 
+      pH = NA 
       ) %>% 
     #lat/long/elev for mohonk from Olesky et al. 2024 and Osiris is from google
     mutate(latitude=case_when(lakeID=="MHK"~41.766,
