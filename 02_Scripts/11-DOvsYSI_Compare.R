@@ -10,13 +10,16 @@ if (!require(gridExtra)){install.packages("gridExtra")}
 library(tidyverse) #for dplyr and ggplot
 library(patchwork)
 library(gridExtra)
-
+library(dplyr)
 #Set year####
 yearIndex<-"2026"
 
 #List files####
 DO_profiles <- list.files(path = paste0("01_Data/MHK_Data/DOSensor/DO_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
 YSI_profiles <- list.files(path = paste0("01_Data/MHK_Data/EXO1Sonde/Profile_correct_format/",yearIndex,"/"), pattern = "*.csv", full.names = TRUE)
+
+
+
 
 # function to extract date 
 extract_date <- function(x){
@@ -52,6 +55,7 @@ for(day.index in 1:length(unique_dates)){
   # files for that date
   todays_files <- all_files %>% filter(date == unique_dates[day.index])
   
+  
   #Read in the Hach and YSI data####
   #*suppress the read in messages####
   temp.Hach<-read_csv(all_files$file_Hach[day.index], show_col_types = FALSE)%>%
@@ -62,7 +66,6 @@ for(day.index in 1:length(unique_dates)){
               dplyr::select(Date,Depth_m,temp_degC,doConcentration_mgpL,doSaturation_percent)%>%
               rename_with(~ paste0(., "_YSI"), .cols = temp_degC:doSaturation_percent)
 
-  
   
   #Left_join with YSI
   merged_DF<-left_join(temp.YSI,temp.Hach) 
